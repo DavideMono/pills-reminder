@@ -2,7 +2,7 @@ import React, { useState, VFC } from 'react'
 import { Keyboard, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import Input from 'src/components/Input'
 import Button from 'src/components/Button'
-import { SECONDARY } from 'src/lib/constant'
+import { BACKGROUND_SECONDARY } from 'src/lib/constant'
 import { COMMON_STYLE } from 'src/lib/styles'
 
 const Home: VFC = () => {
@@ -31,6 +31,7 @@ const Home: VFC = () => {
         <Button
           styleRoot={styles.component}
           color="secondary"
+          variant="text"
           onPress={() => console.log('On press')}
           text="Press me"
         />
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
   cardComponent: {
     display: 'flex',
     flexDirection: 'row',
-    backgroundColor: SECONDARY,
+    backgroundColor: BACKGROUND_SECONDARY,
     paddingHorizontal: 8,
     paddingVertical: 12
   },
