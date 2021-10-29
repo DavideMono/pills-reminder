@@ -6,7 +6,8 @@ type Props = {
   text: string
   onPress: () => void
   color?: 'primary' | 'secondary' | 'default'
-  style?: StyleProp<ViewStyle>
+  styleRoot?: StyleProp<ViewStyle>
+  styleText?: StyleProp<TextStyle>
 }
 
 const Button: VFC<Props> = ({ color = 'default', ...props }) => {
@@ -18,15 +19,18 @@ const Button: VFC<Props> = ({ color = 'default', ...props }) => {
     if (color === 'secondary') {
       defaultStyle.push(styles.buttonSecondary)
     }
-    return [...defaultStyle, props.style]
-  }, [color, props.style])
+    defaultStyle.push(props.styleRoot)
+    return defaultStyle
+  }, [color, props.styleRoot])
 
   const textStyle = useMemo<StyleProp<TextStyle>>(() => {
+    const defaultStyle: StyleProp<TextStyle> = []
     if (color === 'primary') {
-      return styles.buttonPrimaryText
+      defaultStyle.push(styles.buttonPrimaryText)
     }
-    return []
-  }, [color])
+    defaultStyle.push(props.styleText)
+    return defaultStyle
+  }, [color, props.styleText])
 
   return (
     <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.8}>
