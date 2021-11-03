@@ -1,5 +1,6 @@
 import React, { useState, VFC } from 'react'
-import { Keyboard, ScrollView, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
+import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Input from 'src/components/Input'
 import Button from 'src/components/Button'
 import { BACKGROUND_SECONDARY } from 'src/lib/constant'
@@ -9,7 +10,7 @@ const Home: VFC = () => {
   const [value, setValue] = useState<string>('')
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <DismissKeyboardView>
       <View style={styles.root}>
         <Input style={styles.component} value={value} onChange={setValue} placeholder="Search" />
         <View style={styles.component}>
@@ -36,7 +37,7 @@ const Home: VFC = () => {
           text="Press me"
         />
       </View>
-    </TouchableWithoutFeedback>
+    </DismissKeyboardView>
   )
 }
 
