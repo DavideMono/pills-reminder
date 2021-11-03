@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Input from 'src/components/Input'
 import Button from 'src/components/Button'
-import { BACKGROUND_SECONDARY } from 'src/lib/constant'
+import { BACKGROUND_SECONDARY, BORDER_RADIUS } from 'src/lib/constant'
 import { COMMON_STYLE } from 'src/lib/styles'
 
 const Home: VFC = () => {
@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: BACKGROUND_SECONDARY,
     paddingHorizontal: 8,
-    paddingVertical: 12
+    paddingVertical: 12,
+    borderRadius: BORDER_RADIUS
   },
   cardLeftChild: {
     flex: 1
