@@ -17,19 +17,21 @@ type Props = {
   onPress: () => void
   color?: ThemeColor
   variant?: ThemeVariant
+  size?: 'sm' | 'md' | 'lg' | 'xl'
   styleRoot?: StyleProp<ViewStyle>
   styleText?: StyleProp<TextStyle>
 }
 
-const Button: VFC<Props> = ({ color = 'default', variant = 'text', ...props }) => {
+const Button: VFC<Props> = ({ color = 'default', variant = 'text', size = 'md', ...props }) => {
   const styleMatcher = useMemo(() => `${color}${capitalize(variant)}`, [color, variant])
 
   const style = useMemo<StyleProp<ViewStyle>>(() => {
     const defaultStyle: StyleProp<ViewStyle> = [styles.button]
     const selector = styleMatcher as keyof typeof buttonContainerStyle
-    defaultStyle.push(buttonContainerStyle[selector], props.styleRoot)
+    const sizeSelector = ('button' + capitalize(size)) as keyof typeof styles
+    defaultStyle.push(buttonContainerStyle[selector], styles[sizeSelector], props.styleRoot)
     return defaultStyle
-  }, [styleMatcher, props.styleRoot])
+  }, [styleMatcher, size, props.styleRoot])
 
   const textStyle = useMemo<StyleProp<TextStyle>>(() => {
     const defaultStyle: StyleProp<TextStyle> = []
@@ -85,8 +87,19 @@ const buttonTextStyle = StyleSheet.create({
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
     borderRadius: BORDER_RADIUS
+  },
+  buttonSm: {
+    padding: 4
+  },
+  buttonMd: {
+    padding: 8
+  },
+  buttonLg: {
+    padding: 14
+  },
+  buttonXl: {
+    padding: 16
   }
 })
 
