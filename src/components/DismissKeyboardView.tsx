@@ -3,7 +3,7 @@ import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-
 
 const DismissKeyboardView: FC = (props) => {
   return (
-    <KeyboardAvoidingView behavior="height">
+    <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{props.children}</TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   )
