@@ -17,4 +17,5 @@ export type Store = {
   add: (task: PillTask) => void
   update: (task: PillTask, index: number) => void
   delete: (index: number) => void
+  initialize: (tasks: PillTask[]) => void
 }
