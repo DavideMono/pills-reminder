@@ -1,5 +1,5 @@
 import React, { useMemo, VFC } from 'react'
-import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
+import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native'
 import { FontAwesomeIcon, FontAwesomeIconStyle, Props as IconProps } from '@fortawesome/react-native-fontawesome'
 import {
   BACKGROUND_COLOR,
@@ -54,6 +54,7 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = '
     <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6}>
       {props.leftIcon && <FontAwesomeIcon style={colorStyle} icon={props.leftIcon} />}
       {props.text && <Text style={textStyle}>{props.text}</Text>}
+      {props.rightIcon && <View style={styles.buttonSpacer} />}
       {props.rightIcon && <FontAwesomeIcon style={colorStyle} icon={props.rightIcon} />}
     </TouchableOpacity>
   )
@@ -99,8 +100,12 @@ const buttonTextStyle = StyleSheet.create({
 
 const styles = StyleSheet.create({
   button: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: BORDER_RADIUS
   },
+  buttonSpacer: { flex: 1 },
   buttonSm: {
     padding: 4
   },
