@@ -22,51 +22,49 @@ const Home: VFC = () => {
 
   return (
     <DismissKeyboardView>
-      <View style={styles.root}>
-        <Input style={styles.component} value={searchValue} onChange={setSearchValue} placeholder="Search" />
-        <View style={styles.component}>
-          <Text style={COMMON_STYLE.title}>Hello,</Text>
-          <Text style={COMMON_STYLE.subtitleLight}>$YOUR NAME</Text>
-        </View>
-        <View style={[styles.component, styles.cardComponent]}>
-          <View style={[styles.cardLeftChild, styles.cardTextContainer]}>
-            <Text style={COMMON_STYLE.subtitle}>Your Plan for today</Text>
-            <Text>$NC of $NT completed</Text>
-            <Text style={[COMMON_STYLE.link, styles.textSpacer]}>Show more</Text>
-          </View>
-          <View style={styles.cardRightChild} />
-        </View>
-        <Text style={[COMMON_STYLE.subtitle]}>Daily Review</Text>
-        <ScrollView>
-          {filteredTasks.length ? (
-            filteredTasks.map((task, index) => (
-              <Button
-                styleRoot={styles.taskContainer}
-                key={index}
-                text={task.name}
-                onPress={() => console.log('Press on', task.name)}
-              />
-            ))
-          ) : (
-            <Text>NO TASK FOR NOW</Text>
-          )}
-        </ScrollView>
-        <Button
-          styleRoot={styles.component}
-          color="secondary"
-          onPress={() =>
-            add({
-              name: 'Next task' + tasks.length,
-              amount: 2,
-              timeAmount: 25,
-              timeAmountMeasure: 'days',
-              eatTime: ['breakfast'],
-              timeNotification: 25
-            })
-          }
-          text="Press me"
-        />
+      <Input style={styles.component} value={searchValue} onChange={setSearchValue} placeholder="Search" />
+      <View style={styles.component}>
+        <Text style={COMMON_STYLE.title}>Hello,</Text>
+        <Text style={COMMON_STYLE.subtitleLight}>$YOUR NAME</Text>
       </View>
+      <View style={[styles.component, styles.cardComponent]}>
+        <View style={[styles.cardLeftChild, styles.cardTextContainer]}>
+          <Text style={COMMON_STYLE.subtitle}>Your Plan for today</Text>
+          <Text>$NC of $NT completed</Text>
+          <Text style={[COMMON_STYLE.link, styles.textSpacer]}>Show more</Text>
+        </View>
+        <View style={styles.cardRightChild} />
+      </View>
+      <Text style={[COMMON_STYLE.subtitle]}>Daily Review</Text>
+      <ScrollView>
+        {filteredTasks.length ? (
+          filteredTasks.map((task, index) => (
+            <Button
+              styleRoot={styles.taskContainer}
+              key={index}
+              text={task.name}
+              onPress={() => console.log('Press on', task.name)}
+            />
+          ))
+        ) : (
+          <Text>NO TASK FOR NOW</Text>
+        )}
+      </ScrollView>
+      <Button
+        styleRoot={styles.component}
+        color="secondary"
+        onPress={() =>
+          add({
+            name: 'Next task' + tasks.length,
+            amount: 2,
+            timeAmount: 25,
+            timeAmountMeasure: 'days',
+            eatTime: ['breakfast'],
+            timeNotification: 25
+          })
+        }
+        text="Press me"
+      />
     </DismissKeyboardView>
   )
 }

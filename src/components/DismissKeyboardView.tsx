@@ -1,12 +1,30 @@
 import React, { FC } from 'react'
-import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from 'react-native'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  StyleProp,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle
+} from 'react-native'
 
-const DismissKeyboardView: FC = (props) => {
+type Props = {
+  style?: StyleProp<ViewStyle>
+}
+
+const DismissKeyboardView: FC<Props> = (props) => {
   return (
-    <KeyboardAvoidingView behavior="height" style={{ flex: 1 }}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>{props.children}</TouchableWithoutFeedback>
+    <KeyboardAvoidingView behavior="height" style={styles.root}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={[styles.root, props.style]}>{props.children}</View>
+      </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   )
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 }
+})
 
 export default DismissKeyboardView
