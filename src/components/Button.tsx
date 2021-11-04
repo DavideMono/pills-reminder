@@ -20,6 +20,7 @@ type ContentProps =
 
 type Props = {
   onPress: () => void
+  disabled?: boolean
   color?: ThemeColor
   variant?: ThemeVariant
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'big'
@@ -35,9 +36,14 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = '
     const defaultStyle: StyleProp<ViewStyle> = [styles.button]
     const selector = styleMatcher as keyof typeof buttonContainerStyle
     const sizeSelector = `button${capitalize(size)}` as keyof typeof styles
-    defaultStyle.push(buttonContainerStyle[selector], styles[sizeSelector], props.styleRoot)
+    defaultStyle.push(
+      buttonContainerStyle[selector],
+      styles[sizeSelector],
+      props.styleRoot,
+      props.disabled && styles.buttonDisabled
+    )
     return defaultStyle
-  }, [styleMatcher, size, props.styleRoot])
+  }, [styleMatcher, size, props.disabled, props.styleRoot])
 
   const colorStyle = useMemo<FontAwesomeIconStyle>(() => {
     const selector = styleMatcher as keyof typeof buttonTextStyle
@@ -51,7 +57,7 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = '
   }, [colorStyle, props.styleText])
 
   return (
-    <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6}>
+    <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6} disabled={props.disabled}>
       {props.leftIcon && <FontAwesomeIcon style={colorStyle} icon={props.leftIcon} />}
       {props.text && <Text style={textStyle}>{props.text}</Text>}
       {props.rightIcon && <View style={styles.buttonSpacer} />}
@@ -106,6 +112,7 @@ const styles = StyleSheet.create({
     borderRadius: BORDER_RADIUS
   },
   buttonSpacer: { flex: 1 },
+  buttonDisabled: { opacity: 0.6 },
   buttonSm: {
     padding: 4
   },
