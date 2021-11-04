@@ -1,5 +1,6 @@
 import React, { useMemo, VFC } from 'react'
 import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
+import { FontAwesomeIcon, FontAwesomeIconStyle, Props as IconProps } from '@fortawesome/react-native-fontawesome'
 import {
   BACKGROUND_COLOR,
   BACKGROUND_PRIMARY,
@@ -12,15 +13,20 @@ import {
 import { ThemeColor, ThemeVariant } from 'src/lib/types'
 import { capitalize } from 'src/lib/utils'
 
+type ContentProps =
+  | { leftIcon: IconProps['icon']; text?: never }
+  | { leftIcon?: never; text: string }
+  | { leftIcon: IconProps['icon']; text: string }
+
 type Props = {
-  text: string
   onPress: () => void
   color?: ThemeColor
   variant?: ThemeVariant
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'big'
+  rightIcon?: IconProps['icon']
   styleRoot?: StyleProp<ViewStyle>
   styleText?: StyleProp<TextStyle>
-}
+} & ContentProps
 
 const Button: VFC<Props> = ({ color = 'default', variant = 'text', size = 'md', ...props }) => {
   const styleMatcher = useMemo(() => `${color}${capitalize(variant)}`, [color, variant])
@@ -33,16 +39,22 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'text', size = 'md', 
     return defaultStyle
   }, [styleMatcher, size, props.styleRoot])
 
+  const colorStyle = useMemo<FontAwesomeIconStyle>(() => {
+    const selector = styleMatcher as keyof typeof buttonTextStyle
+    return buttonTextStyle[selector]
+  }, [styleMatcher])
+
   const textStyle = useMemo<StyleProp<TextStyle>>(() => {
     const defaultStyle: StyleProp<TextStyle> = []
-    const selector = styleMatcher as keyof typeof buttonTextStyle
-    defaultStyle.push(buttonTextStyle[selector], props.styleText)
+    defaultStyle.push(colorStyle, props.styleText)
     return defaultStyle
-  }, [styleMatcher, props.styleText])
+  }, [colorStyle, props.styleText])
 
   return (
     <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6}>
-      <Text style={textStyle}>{props.text}</Text>
+      {props.leftIcon && <FontAwesomeIcon style={colorStyle} icon={props.leftIcon} />}
+      {props.text && <Text style={textStyle}>{props.text}</Text>}
+      {props.rightIcon && <FontAwesomeIcon style={colorStyle} icon={props.rightIcon} />}
     </TouchableOpacity>
   )
 }

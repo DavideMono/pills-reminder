@@ -5,9 +5,9 @@ import Button from 'src/components/Button'
 const BottomNavigation: VFC = () => {
   return (
     <View style={styles.root}>
-      <Button text="H" onPress={() => {}} />
-      <Button color="primary" text="ADD" size="big" onPress={() => {}} />
-      <Button text="C" onPress={() => {}} />
+      <Button leftIcon="home" size="lg" onPress={() => {}} />
+      <Button leftIcon="plus" color="primary" size="big" onPress={() => {}} />
+      <Button leftIcon="calendar" size="lg" onPress={() => {}} />
     </View>
   )
 }
@@ -17,8 +17,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-around',
-    padding: 8
+    justifyContent: 'space-around'
   }
 })
 
