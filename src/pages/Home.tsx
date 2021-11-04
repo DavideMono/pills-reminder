@@ -54,7 +54,6 @@ const Home: VFC = () => {
         <Button
           styleRoot={styles.component}
           color="secondary"
-          variant="text"
           onPress={() =>
             add({
               name: 'Next task' + tasks.length,
@@ -74,8 +73,7 @@ const Home: VFC = () => {
 
 const styles = StyleSheet.create({
   root: {
-    flex: 1,
-    padding: 12
+    flex: 1
   },
   component: {
     marginVertical: 8

@@ -1,5 +1,6 @@
 import React, { useMemo, VFC } from 'react'
 import { StyleProp, StyleSheet, Text, TextStyle, TouchableOpacity, ViewStyle } from 'react-native'
+import { FontAwesomeIcon, FontAwesomeIconStyle, Props as IconProps } from '@fortawesome/react-native-fontawesome'
 import {
   BACKGROUND_COLOR,
   BACKGROUND_PRIMARY,
@@ -12,81 +13,108 @@ import {
 import { ThemeColor, ThemeVariant } from 'src/lib/types'
 import { capitalize } from 'src/lib/utils'
 
+type ContentProps =
+  | { leftIcon: IconProps['icon']; text?: never }
+  | { leftIcon?: never; text: string }
+  | { leftIcon: IconProps['icon']; text: string }
+
 type Props = {
-  text: string
   onPress: () => void
   color?: ThemeColor
   variant?: ThemeVariant
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'big'
+  rightIcon?: IconProps['icon']
   styleRoot?: StyleProp<ViewStyle>
   styleText?: StyleProp<TextStyle>
-}
+} & ContentProps
 
-const Button: VFC<Props> = ({ color = 'default', variant = 'text', ...props }) => {
+const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = 'md', ...props }) => {
   const styleMatcher = useMemo(() => `${color}${capitalize(variant)}`, [color, variant])
 
   const style = useMemo<StyleProp<ViewStyle>>(() => {
     const defaultStyle: StyleProp<ViewStyle> = [styles.button]
     const selector = styleMatcher as keyof typeof buttonContainerStyle
-    defaultStyle.push(buttonContainerStyle[selector], props.styleRoot)
+    const sizeSelector = `button${capitalize(size)}` as keyof typeof styles
+    defaultStyle.push(buttonContainerStyle[selector], styles[sizeSelector], props.styleRoot)
     return defaultStyle
-  }, [styleMatcher, props.styleRoot])
+  }, [styleMatcher, size, props.styleRoot])
+
+  const colorStyle = useMemo<FontAwesomeIconStyle>(() => {
+    const selector = styleMatcher as keyof typeof buttonTextStyle
+    return buttonTextStyle[selector]
+  }, [styleMatcher])
 
   const textStyle = useMemo<StyleProp<TextStyle>>(() => {
     const defaultStyle: StyleProp<TextStyle> = []
-    const selector = styleMatcher as keyof typeof buttonTextStyle
-    defaultStyle.push(buttonTextStyle[selector], props.styleText)
+    defaultStyle.push(colorStyle, props.styleText)
     return defaultStyle
-  }, [styleMatcher, props.styleText])
+  }, [colorStyle, props.styleText])
 
   return (
     <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6}>
-      <Text style={textStyle}>{props.text}</Text>
+      {props.leftIcon && <FontAwesomeIcon style={colorStyle} icon={props.leftIcon} />}
+      {props.text && <Text style={textStyle}>{props.text}</Text>}
+      {props.rightIcon && <FontAwesomeIcon style={colorStyle} icon={props.rightIcon} />}
     </TouchableOpacity>
   )
 }
 
 const buttonContainerStyle = StyleSheet.create({
-  defaultText: {
+  defaultText: {},
+  defaultContained: {
     backgroundColor: BACKGROUND_COLOR
   },
-  defaultContained: {},
   primaryText: {
-    backgroundColor: PRIMARY
-  },
-  primaryContained: {
     backgroundColor: BACKGROUND_PRIMARY
   },
+  primaryContained: {
+    backgroundColor: PRIMARY
+  },
   secondaryText: {
-    backgroundColor: SECONDARY
+    backgroundColor: BACKGROUND_SECONDARY
   },
   secondaryContained: {
-    backgroundColor: BACKGROUND_SECONDARY
+    backgroundColor: SECONDARY
   }
 })
 
 const buttonTextStyle = StyleSheet.create({
-  defaultText: {},
-  defaultContained: {
+  defaultText: {
     color: LIGHT_COLOR
   },
+  defaultContained: {},
   primaryText: {
-    color: '#FFFFFF'
-  },
-  primaryContained: {
     color: PRIMARY
   },
-  secondaryText: {
+  primaryContained: {
     color: '#FFFFFF'
   },
-  secondaryContained: {
+  secondaryText: {
     color: SECONDARY
+  },
+  secondaryContained: {
+    color: '#FFFFFF'
   }
 })
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
     borderRadius: BORDER_RADIUS
+  },
+  buttonSm: {
+    padding: 4
+  },
+  buttonMd: {
+    padding: 8
+  },
+  buttonLg: {
+    padding: 14
+  },
+  buttonXl: {
+    padding: 16
+  },
+  buttonBig: {
+    padding: 24
   }
 })
 
