@@ -54,7 +54,6 @@ const Home: VFC = () => {
         <Button
           styleRoot={styles.component}
           color="secondary"
-          variant="text"
           onPress={() =>
             add({
               name: 'Next task' + tasks.length,

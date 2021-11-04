@@ -28,7 +28,7 @@ type Props = {
   styleText?: StyleProp<TextStyle>
 } & ContentProps
 
-const Button: VFC<Props> = ({ color = 'default', variant = 'text', size = 'md', ...props }) => {
+const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = 'md', ...props }) => {
   const styleMatcher = useMemo(() => `${color}${capitalize(variant)}`, [color, variant])
 
   const style = useMemo<StyleProp<ViewStyle>>(() => {
@@ -60,40 +60,40 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'text', size = 'md', 
 }
 
 const buttonContainerStyle = StyleSheet.create({
-  defaultText: {
+  defaultText: {},
+  defaultContained: {
     backgroundColor: BACKGROUND_COLOR
   },
-  defaultContained: {},
   primaryText: {
-    backgroundColor: PRIMARY
-  },
-  primaryContained: {
     backgroundColor: BACKGROUND_PRIMARY
   },
+  primaryContained: {
+    backgroundColor: PRIMARY
+  },
   secondaryText: {
-    backgroundColor: SECONDARY
+    backgroundColor: BACKGROUND_SECONDARY
   },
   secondaryContained: {
-    backgroundColor: BACKGROUND_SECONDARY
+    backgroundColor: SECONDARY
   }
 })
 
 const buttonTextStyle = StyleSheet.create({
-  defaultText: {},
-  defaultContained: {
+  defaultText: {
     color: LIGHT_COLOR
   },
+  defaultContained: {},
   primaryText: {
-    color: '#FFFFFF'
-  },
-  primaryContained: {
     color: PRIMARY
   },
-  secondaryText: {
+  primaryContained: {
     color: '#FFFFFF'
   },
-  secondaryContained: {
+  secondaryText: {
     color: SECONDARY
+  },
+  secondaryContained: {
+    color: '#FFFFFF'
   }
 })
 
