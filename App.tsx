@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, VFC } from 'react'
+import { StyleSheet, View } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { STORE_PILLS_KEY } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
+import BottomNavigation from 'src/components/BottomNavigation'
 import Home from 'src/pages/Home'
 
 const App: VFC = () => {
@@ -28,7 +30,16 @@ const App: VFC = () => {
     initializeStorage()
   }, [])
 
-  return <Home />
+  return (
+    <View style={styles.root}>
+      <Home />
+      <BottomNavigation />
+    </View>
+  )
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1 }
+})
 
 export default App
