@@ -35,10 +35,10 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = '
   const style = useMemo<StyleProp<ViewStyle>>(() => {
     const defaultStyle: StyleProp<ViewStyle> = [styles.button]
     const selector = styleMatcher as keyof typeof buttonContainerStyle
-    const sizeSelector = `button${capitalize(size)}` as keyof typeof styles
+    const sizeSelector = `button${capitalize(size)}` as keyof typeof sizeStyles
     defaultStyle.push(
       buttonContainerStyle[selector],
-      styles[sizeSelector],
+      sizeStyles[sizeSelector],
       props.styleRoot,
       props.disabled && styles.buttonDisabled
     )
@@ -52,9 +52,9 @@ const Button: VFC<Props> = ({ color = 'default', variant = 'contained', size = '
 
   const textStyle = useMemo<StyleProp<TextStyle>>(() => {
     const defaultStyle: StyleProp<TextStyle> = []
-    defaultStyle.push(colorStyle, props.styleText)
+    defaultStyle.push(colorStyle, props.styleText, !!props.leftIcon && styles.textSpacer)
     return defaultStyle
-  }, [colorStyle, props.styleText])
+  }, [colorStyle, props.styleText, props.leftIcon])
 
   return (
     <TouchableOpacity style={style} onPress={props.onPress} activeOpacity={0.6} disabled={props.disabled}>
@@ -104,15 +104,7 @@ const buttonTextStyle = StyleSheet.create({
   }
 })
 
-const styles = StyleSheet.create({
-  button: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: BORDER_RADIUS
-  },
-  buttonSpacer: { flex: 1 },
-  buttonDisabled: { opacity: 0.6 },
+const sizeStyles = StyleSheet.create({
   buttonSm: {
     padding: 4
   },
@@ -128,6 +120,18 @@ const styles = StyleSheet.create({
   buttonBig: {
     padding: 24
   }
+})
+
+const styles = StyleSheet.create({
+  button: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: BORDER_RADIUS
+  },
+  buttonSpacer: { flex: 1 },
+  buttonDisabled: { opacity: 0.6 },
+  textSpacer: { marginLeft: 8 }
 })
 
 export default Button
