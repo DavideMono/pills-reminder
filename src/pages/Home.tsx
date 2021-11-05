@@ -1,5 +1,6 @@
 import React, { useEffect, useState, VFC } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import shallow from 'zustand/shallow'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Input from 'src/components/Input'
@@ -7,10 +8,11 @@ import Button from 'src/components/Button'
 import { BACKGROUND_SECONDARY, BORDER_RADIUS } from 'src/lib/constant'
 import { COMMON_STYLE } from 'src/lib/styles'
 import { useStore } from 'src/lib/store'
-import { PillTask } from 'src/lib/types'
+import { PillTask, ScreenList } from 'src/lib/types'
 
-const Home: VFC = () => {
+const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = () => {
   const { tasks, add } = useStore((state) => ({ tasks: state.tasks, add: state.add }), shallow)
+  const name = useStore((store) => store.name)
   const [filteredTasks, setFilteredTasks] = useState<PillTask[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
 
@@ -25,7 +27,7 @@ const Home: VFC = () => {
       <Input style={styles.component} value={searchValue} onChange={setSearchValue} placeholder="Search" />
       <View style={styles.component}>
         <Text style={COMMON_STYLE.title}>Hello,</Text>
-        <Text style={COMMON_STYLE.subtitleLight}>$YOUR NAME</Text>
+        <Text style={COMMON_STYLE.subtitleLight}>{name}</Text>
       </View>
       <View style={[styles.component, styles.cardComponent]}>
         <View style={[styles.cardLeftChild, styles.cardTextContainer]}>

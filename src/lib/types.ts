@@ -21,3 +21,8 @@ export type Store = {
   delete: (index: number) => void
   initialize: (tasks: PillTask[], name: string) => void
 }
+
+export type ScreenList = {
+  Home: undefined
+  Account: undefined
+}

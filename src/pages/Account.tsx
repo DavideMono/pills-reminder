@@ -1,13 +1,23 @@
-import React, { useMemo, useState, VFC } from 'react'
+import React, { useCallback, useMemo, useState, VFC } from 'react'
 import { StyleSheet, Text, View } from 'react-native'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import shallow from 'zustand/shallow'
 import { COMMON_STYLE } from 'src/lib/styles'
+import { useStore } from 'src/lib/store'
+import { ScreenList } from 'src/lib/types'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Input from 'src/components/Input'
 import Button from 'src/components/Button'
 
-const Account: VFC = () => {
-  const [name, setName] = useState<string>('')
+const Account: VFC<NativeStackScreenProps<ScreenList, 'Account'>> = (props) => {
+  const [actualName, updateName] = useStore((store) => [store.name, store.updateName], shallow)
+  const [name, setName] = useState<string>(actualName)
   const isNextDisabled = useMemo(() => !name, [name])
+  const clear = useCallback(() => setName(''), [])
+  const update = useCallback(() => {
+    updateName(name)
+    props.navigation.navigate('Home')
+  }, [name, updateName, props.navigation])
 
   return (
     <DismissKeyboardView navigation={false}>
@@ -21,7 +31,7 @@ const Account: VFC = () => {
           size="xl"
           text="CLEAR"
           rightIcon="broom"
-          onPress={() => {}}
+          onPress={clear}
         />
         <Button
           styleRoot={[styles.action, styles.rightAction]}
@@ -30,7 +40,7 @@ const Account: VFC = () => {
           color="primary"
           text="NEXT"
           rightIcon="long-arrow-alt-right"
-          onPress={() => console.log('Apply')}
+          onPress={update}
         />
       </View>
     </DismissKeyboardView>
