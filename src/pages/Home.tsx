@@ -25,7 +25,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
   }, [tasks, searchValue])
 
   return (
-    <DismissKeyboardView>
+    <DismissKeyboardView navigate={props.navigation.navigate}>
       <View style={[styles.inputContainer, styles.component]}>
         <Input style={styles.input} value={searchValue} onChange={setSearchValue} placeholder="Search" />
         <Button onPress={goToSettings} leftIcon="cog" />
@@ -67,9 +67,6 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1
-  },
   inputContainer: {
     display: 'flex',
     flexDirection: 'row'

@@ -20,7 +20,7 @@ const Account: VFC<NativeStackScreenProps<ScreenList, 'Account'>> = (props) => {
   }, [name, updateName, props.navigation])
 
   return (
-    <DismissKeyboardView navigation={false}>
+    <DismissKeyboardView>
       <View style={styles.root}>
         <Text style={[COMMON_STYLE.title, styles.text]}>What's your name?</Text>
         <Input style={styles.input} value={name} onChange={setName} placeholder="Insert your name" />

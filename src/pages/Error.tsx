@@ -7,7 +7,7 @@ type Props = { error: string }
 
 const Error: VFC<Props> = (props) => {
   return (
-    <DismissKeyboardView navigation={false} style={styles.root}>
+    <DismissKeyboardView style={styles.root}>
       <Text style={COMMON_STYLE.subtitle}>Oh no! We got an error</Text>
       <Text>{props.error}</Text>
     </DismissKeyboardView>

@@ -25,4 +25,5 @@ export type Store = {
 export type ScreenList = {
   Home: undefined
   Account: undefined
+  Plan: { id: string } | undefined
 }

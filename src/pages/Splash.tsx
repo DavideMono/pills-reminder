@@ -6,7 +6,7 @@ import DismissKeyboardView from 'src/components/DismissKeyboardView'
 
 const Splash: VFC = () => {
   return (
-    <DismissKeyboardView navigation={false} style={styles.root}>
+    <DismissKeyboardView style={styles.root}>
       <Text style={[COMMON_STYLE.title, styles.leftText]}>Pills</Text>
       <Text style={COMMON_STYLE.title}>Reminder</Text>
     </DismissKeyboardView>

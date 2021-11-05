@@ -7,6 +7,7 @@ import {
   faCalendar,
   faCog,
   faHome,
+  faLongArrowAltLeft,
   faLongArrowAltRight,
   faPills,
   faPlus
@@ -18,10 +19,11 @@ import { PillTask } from 'src/lib/types'
 import { parseStoreValue } from 'src/lib/utils'
 import Home from 'src/pages/Home'
 import Account from 'src/pages/Account'
+import Plan from 'src/pages/Plan'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 
-library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog, faPills)
+library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog, faPills, faLongArrowAltLeft)
 
 const Stack = createNativeStackNavigator()
 const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }
@@ -72,6 +74,7 @@ const App: VFC = () => {
       <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Account" component={Account} />
+        <Stack.Screen name="Plan" component={Plan} />
       </Stack.Navigator>
     </NavigationContainer>
   )
