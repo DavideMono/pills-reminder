@@ -11,7 +11,7 @@ import { useStore } from 'src/lib/store'
 import { PillTask, ScreenList } from 'src/lib/types'
 
 const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
-  const [tasks, add] = useStore((state) => [state.tasks, state.add], shallow)
+  const [tasks] = useStore((state) => [state.tasks, state.add], shallow)
   const name = useStore((store) => store.name)
   const [filteredTasks, setFilteredTasks] = useState<PillTask[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
@@ -43,35 +43,25 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
         <View style={styles.cardRightChild} />
       </View>
       <Text style={[COMMON_STYLE.subtitle]}>Daily Review</Text>
-      <ScrollView>
-        {filteredTasks.length ? (
-          filteredTasks.map((task, index) => (
+      {filteredTasks.length ? (
+        <ScrollView style={[styles.component, styles.generalTaskContainer]}>
+          {filteredTasks.map((task, index) => (
             <Button
-              styleRoot={styles.taskContainer}
               key={index}
+              styleRoot={styles.component}
+              size="xl"
+              leftIcon="pills"
               text={task.name}
+              rightIcon="long-arrow-alt-right"
               onPress={() => console.log('Press on', task.name)}
             />
-          ))
-        ) : (
+          ))}
+        </ScrollView>
+      ) : (
+        <View style={[styles.component, styles.noTaskContainer, styles.generalTaskContainer]}>
           <Text>NO TASK FOR NOW</Text>
-        )}
-      </ScrollView>
-      <Button
-        styleRoot={styles.component}
-        color="secondary"
-        onPress={() =>
-          add({
-            name: 'Next task' + tasks.length,
-            amount: 2,
-            timeAmount: 25,
-            timeAmountMeasure: 'days',
-            eatTime: ['breakfast'],
-            timeNotification: 25
-          })
-        }
-        text="Press me"
-      />
+        </View>
+      )}
     </DismissKeyboardView>
   )
 }
@@ -111,8 +101,13 @@ const styles = StyleSheet.create({
   textSpacer: {
     marginTop: 24
   },
-  taskContainer: {
-    marginVertical: 8
+  generalTaskContainer: {
+    flex: 1
+  },
+  noTaskContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center'
   }
 })
 
