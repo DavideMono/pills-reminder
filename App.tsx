@@ -4,9 +4,12 @@ import { NavigationContainer, DefaultTheme, Theme } from '@react-navigation/nati
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { faBroom, faCalendar, faHome, faLongArrowAltRight, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { STORE_PILLS_KEY } from 'src/lib/constant'
+import { STORE_NAME_KEY, STORE_PILLS_KEY } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
+import { PillTask } from 'src/lib/types'
+import { parseStoreValue } from 'src/lib/utils'
 import Home from 'src/pages/Home'
+import Account from 'src/pages/Account'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 
@@ -16,26 +19,30 @@ const Stack = createNativeStackNavigator()
 const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }
 
 const App: VFC = () => {
+  const [initialRoute, setInitialRoute] = useState<string>('Home')
   const [isLoading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const initialize = useStore((store) => store.initialize)
 
   const initializeStorage = useCallback(async () => {
+    let pills: PillTask[] = []
+    let name: string = ''
     try {
-      const data = await AsyncStorage.getItem(STORE_PILLS_KEY)
-      if (data !== null) {
-        const parsed = JSON.parse(data)
-        console.log('Not null', data, parsed)
-        initialize(parsed)
-      } else {
-        console.log('Is null')
-        initialize([])
-      }
+      const data = await AsyncStorage.multiGet([STORE_PILLS_KEY, STORE_NAME_KEY])
+      data.forEach(([key, value]) => {
+        if (key === STORE_PILLS_KEY) {
+          pills = parseStoreValue(value, [])
+        }
+        if (key === STORE_NAME_KEY) {
+          name = parseStoreValue(value, '')
+        }
+      })
     } catch {
       console.log('On catch')
       setError('Unable to load data. Please, close and reopen the app')
-      initialize([])
     } finally {
+      if (!name) setInitialRoute('Account')
+      initialize(pills, name)
       setLoading(false)
     }
   }, [])
@@ -54,8 +61,9 @@ const App: VFC = () => {
 
   return (
     <NavigationContainer theme={theme}>
-      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+      <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="Account" component={Account} />
       </Stack.Navigator>
     </NavigationContainer>
   )

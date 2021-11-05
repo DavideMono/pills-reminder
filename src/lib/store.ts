@@ -4,7 +4,9 @@ import { STORE_PILLS_KEY } from 'src/lib/constant'
 import { Store } from 'src/lib/types'
 
 export const useStore = create<Store>((set) => ({
+  name: '',
   tasks: [],
+  updateName: (name) => ({ name }),
   add: (task) => {
     return set((store) => {
       const updatedTasks = store.tasks.concat(task)
@@ -23,7 +25,7 @@ export const useStore = create<Store>((set) => ({
       return { tasks: updatedTasks }
     })
   },
-  initialize: (tasks) => set(() => ({ tasks }))
+  initialize: (tasks, name) => set(() => ({ tasks, name }))
 }))
 
 const onTaskUpdate = (store: Store) => {

@@ -13,9 +13,11 @@ export type PillTask = {
 }
 
 export type Store = {
+  name: string
   tasks: PillTask[]
+  updateName: (name: string) => void
   add: (task: PillTask) => void
   update: (task: PillTask, index: number) => void
   delete: (index: number) => void
-  initialize: (tasks: PillTask[]) => void
+  initialize: (tasks: PillTask[], name: string) => void
 }

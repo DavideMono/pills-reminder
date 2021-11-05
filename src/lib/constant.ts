@@ -9,3 +9,4 @@ export const SECONDARY = '#AAAC8C'
 export const BACKGROUND_SECONDARY = '#F3F6C8'
 
 export const STORE_PILLS_KEY = '@pills'
+export const STORE_NAME_KEY = '@name'
