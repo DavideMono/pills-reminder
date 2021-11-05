@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, VFC } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NavigationContainer, DefaultTheme, Theme } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { faBroom, faCalendar, faHome, faLongArrowAltRight, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faBroom, faCalendar, faCog, faHome, faLongArrowAltRight, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { STORE_NAME_KEY, STORE_PILLS_KEY } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
@@ -13,7 +13,7 @@ import Account from 'src/pages/Account'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 
-library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight)
+library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog)
 
 const Stack = createNativeStackNavigator()
 const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }

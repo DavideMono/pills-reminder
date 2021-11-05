@@ -1,4 +1,4 @@
-import React, { useEffect, useState, VFC } from 'react'
+import React, { useCallback, useEffect, useState, VFC } from 'react'
 import { ScrollView, StyleSheet, Text, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import shallow from 'zustand/shallow'
@@ -10,11 +10,13 @@ import { COMMON_STYLE } from 'src/lib/styles'
 import { useStore } from 'src/lib/store'
 import { PillTask, ScreenList } from 'src/lib/types'
 
-const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = () => {
-  const { tasks, add } = useStore((state) => ({ tasks: state.tasks, add: state.add }), shallow)
+const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
+  const [tasks, add] = useStore((state) => [state.tasks, state.add], shallow)
   const name = useStore((store) => store.name)
   const [filteredTasks, setFilteredTasks] = useState<PillTask[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
+
+  const goToSettings = useCallback(() => props.navigation.navigate('Account'), [props])
 
   useEffect(() => {
     const searchValueLowerCase = searchValue.toLowerCase()
@@ -24,7 +26,10 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = () => {
 
   return (
     <DismissKeyboardView>
-      <Input style={styles.component} value={searchValue} onChange={setSearchValue} placeholder="Search" />
+      <View style={[styles.inputContainer, styles.component]}>
+        <Input style={styles.input} value={searchValue} onChange={setSearchValue} placeholder="Search" />
+        <Button onPress={goToSettings} leftIcon="cog" />
+      </View>
       <View style={styles.component}>
         <Text style={COMMON_STYLE.title}>Hello,</Text>
         <Text style={COMMON_STYLE.subtitleLight}>{name}</Text>
@@ -74,6 +79,14 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = () => {
 const styles = StyleSheet.create({
   root: {
     flex: 1
+  },
+  inputContainer: {
+    display: 'flex',
+    flexDirection: 'row'
+  },
+  input: {
+    flex: 1,
+    marginRight: 8
   },
   component: {
     marginVertical: 8
