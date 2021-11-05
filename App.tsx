@@ -1,16 +1,23 @@
-import React, { useCallback, useEffect, VFC } from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { useCallback, useEffect, useState, VFC } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { faCalendar, faHome, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { NavigationContainer, DefaultTheme, Theme } from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { faBroom, faCalendar, faHome, faLongArrowAltRight, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { STORE_PILLS_KEY } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
-import BottomNavigation from 'src/components/BottomNavigation'
 import Home from 'src/pages/Home'
+import Splash from 'src/pages/Splash'
+import Error from 'src/pages/Error'
 
-library.add(faPlus, faHome, faCalendar)
+library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight)
+
+const Stack = createNativeStackNavigator()
+const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }
 
 const App: VFC = () => {
+  const [isLoading, setLoading] = useState<boolean>(true)
+  const [error, setError] = useState<string | null>(null)
   const initialize = useStore((store) => store.initialize)
 
   const initializeStorage = useCallback(async () => {
@@ -26,7 +33,10 @@ const App: VFC = () => {
       }
     } catch {
       console.log('On catch')
+      setError('Unable to load data. Please, close and reopen the app')
       initialize([])
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -34,16 +44,21 @@ const App: VFC = () => {
     initializeStorage()
   }, [])
 
+  if (isLoading) {
+    return <Splash />
+  }
+
+  if (error) {
+    return <Error error={error} />
+  }
+
   return (
-    <View style={styles.root}>
-      <Home />
-      <BottomNavigation />
-    </View>
+    <NavigationContainer theme={theme}>
+      <Stack.Navigator initialRouteName="Home" screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={Home} />
+      </Stack.Navigator>
+    </NavigationContainer>
   )
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, padding: 12 }
-})
 
 export default App
