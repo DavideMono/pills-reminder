@@ -1,11 +1,12 @@
 import React, { useMemo, VFC } from 'react'
-import { StyleProp, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native'
+import { KeyboardTypeOptions, StyleProp, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native'
 import { FontAwesomeIcon, FontAwesomeIconStyle, Props as IconProps } from '@fortawesome/react-native-fontawesome'
 import { BACKGROUND_COLOR, BORDER_RADIUS, LIGHT_COLOR } from 'src/lib/constant'
 
 type Props = {
   value: string
   onChange: (nextValue: string) => void
+  keyboardType?: KeyboardTypeOptions
   placeholder?: string
   leftIcon?: IconProps['icon']
   rightIcon?: IconProps['icon']
@@ -32,7 +33,13 @@ const Input: VFC<Props> = (props) => {
   return (
     <View style={rootStyle}>
       {props.leftIcon && <FontAwesomeIcon style={props.iconStyle} icon={props.leftIcon} />}
-      <TextInput style={inputStyle} value={props.value} onChangeText={props.onChange} placeholder={props.placeholder} />
+      <TextInput
+        style={inputStyle}
+        value={props.value}
+        onChangeText={props.onChange}
+        placeholder={props.placeholder}
+        keyboardType={props.keyboardType}
+      />
       {props.rightIcon && <FontAwesomeIcon style={props.iconStyle} icon={props.rightIcon} />}
     </View>
   )
