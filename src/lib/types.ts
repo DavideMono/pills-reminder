@@ -3,6 +3,12 @@ export type ThemeVariant = 'text' | 'contained'
 export type TimeAmountMeasure = 'days' | 'weeks' | 'months'
 export type DayEatTime = 'breakfast' | 'lunch' | 'dinner'
 
+export enum TIME_AMOUNT_MEASURE_LABELS {
+  'days' = 'Days',
+  'weeks' = 'Weeks',
+  'months' = 'Months'
+}
+
 export type PillTask = {
   name: string
   amount: number
@@ -27,3 +33,5 @@ export type ScreenList = {
   Account: undefined
   Plan: { id: string } | undefined
 }
+
+export type Option = { label: string; value: any; enabled?: boolean }
