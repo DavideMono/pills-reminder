@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, VFC } from 'react'
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
+import { ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
 import { add, startOfToday } from 'date-fns'
@@ -12,6 +12,8 @@ import Button from 'src/components/Button'
 import Input from 'src/components/Input'
 import Select from 'src/components/Select'
 
+const DEFAULT_TIME = '10:00'
+
 const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [name, setName] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
@@ -19,7 +21,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [timeAmountMeasure, setTimeAmountMeasure] = useState<TimeAmountMeasure>('days')
   const [eatTimes, setEatTimes] = useState<DayEatTime[]>([])
   const [notifications, setNotifications] = useState<string[]>(['10:00'])
-  const [nextActiveDate, setNextActiveDate] = useState<string>('10:00')
+  const [nextActiveDate, setNextActiveDate] = useState<string>(DEFAULT_TIME)
   const [pickerState, setPickerState] = useState<{ date: Date; index: number }>({ date: new Date(), index: -2 })
   const timeAmountMeasureOptions = useMemo(() => enumToOptions(TIME_AMOUNT_MEASURE_LABELS), [])
 
@@ -57,6 +59,23 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       const next = [...prev]
       if (index === -1) next.push(eatTime)
       else next.splice(index, 1)
+      return next
+    })
+  }, [])
+
+  const onNotificationAdd = useCallback((nextNotification: string) => {
+    setNextActiveDate(DEFAULT_TIME)
+    setNotifications((prev) => {
+      const next = [...prev]
+      next.push(nextNotification)
+      return next
+    })
+  }, [])
+
+  const onNotificationRemove = useCallback((index: number) => {
+    setNotifications((prev) => {
+      const next = [...prev]
+      next.splice(index, 1)
       return next
     })
   }, [])
@@ -100,7 +119,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         {EAT_TIMES.map((eat, index, array) => {
           const text = capitalize(eat)
           const color: ThemeColor = eatTimes.includes(eat) ? 'primary' : 'default'
-          const style: StyleProp<ViewStyle> = [styles.flexBig, { justifyContent: 'center' }]
+          const style: StyleProp<ViewStyle> = [styles.flexBig, styles.textCenter]
           const isNotFirst = index !== 0
           const isNotLast = index !== array.length - 1
           if (isNotFirst) style.push(styles.rightSpacer)
@@ -109,24 +128,37 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         })}
       </View>
       <Text style={styles.component}>When do we have to remind you?</Text>
-      {notifications.map((notification, index) => (
-        <View key={index} style={[styles.component, styles.flexContainer]}>
+      <ScrollView style={styles.component}>
+        {notifications.map((notification, index) => (
+          <View key={index} style={[styles.component, styles.flexContainer]}>
+            <Button
+              styleRoot={[styles.flexBig, styles.leftSpacer]}
+              text={notification}
+              onPress={() => onEdit(notification, index)}
+            />
+            <Button
+              styleRoot={styles.rightSpacer}
+              color="secondary"
+              leftIcon="trash-alt"
+              onPress={() => onNotificationRemove(index)}
+            />
+          </View>
+        ))}
+        <View style={[styles.component, styles.flexContainer]}>
           <Button
             styleRoot={[styles.flexBig, styles.leftSpacer]}
-            text={notification}
-            onPress={() => onEdit(notification, index)}
+            text={nextActiveDate}
+            onPress={() => onEdit(nextActiveDate, -1)}
           />
-          <Button styleRoot={styles.rightSpacer} color="secondary" leftIcon="trash-alt" onPress={() => {}} />
+          <Button
+            styleRoot={styles.rightSpacer}
+            color="primary"
+            leftIcon="plus"
+            onPress={() => onNotificationAdd(nextActiveDate)}
+          />
         </View>
-      ))}
-      <View style={[styles.component, styles.flexContainer]}>
-        <Button
-          styleRoot={[styles.flexBig, styles.leftSpacer]}
-          text={nextActiveDate}
-          onPress={() => onEdit(nextActiveDate, -1)}
-        />
-        <Button styleRoot={styles.rightSpacer} color="primary" leftIcon="plus" onPress={() => {}} />
-      </View>
+      </ScrollView>
+      <Button styleRoot={styles.textCenter} text="DONE" color="primary" onPress={() => {}} />
       <DatePicker
         modal
         open={pickerState.index !== -2}
@@ -149,5 +181,6 @@ const styles = StyleSheet.create({
   flexContainer: { display: 'flex', flexDirection: 'row' },
   flexBig: { flex: 1 },
   leftSpacer: { marginRight: 4 },
-  rightSpacer: { marginLeft: 4 }
+  rightSpacer: { marginLeft: 4 },
+  textCenter: { justifyContent: 'center' }
 })
