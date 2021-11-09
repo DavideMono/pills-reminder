@@ -80,6 +80,21 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     })
   }, [])
 
+  const onDone = useCallback(() => {
+    const amountAsNumber = parseInt(amount)
+    const timeAmountAsNumber = parseInt(timeAmount)
+    const hasName = !!name
+    const hasAmount = !!amount && !Number.isNaN(amountAsNumber) && amountAsNumber > 0
+    const hasTimeAmount = !!timeAmount && !Number.isNaN(timeAmountAsNumber) && timeAmountAsNumber > 0
+    const isEatTimeSelected = !!eatTimes.length
+    const hasNotification = !!notifications.length
+    if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
+      console.log('Valid')
+    } else {
+      console.error('Invalid', { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification })
+    }
+  }, [name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
+
   return (
     <DismissKeyboardView>
       <View style={[styles.component, styles.flexContainer]}>
@@ -158,7 +173,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
           />
         </View>
       </ScrollView>
-      <Button styleRoot={styles.textCenter} text="DONE" color="primary" onPress={() => {}} />
+      <Button styleRoot={styles.textCenter} text="DONE" color="primary" onPress={onDone} />
       <DatePicker
         modal
         open={pickerState.index !== -2}
