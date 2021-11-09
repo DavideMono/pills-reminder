@@ -10,7 +10,8 @@ import {
   faLongArrowAltLeft,
   faLongArrowAltRight,
   faPills,
-  faPlus
+  faPlus,
+  faTrashAlt
 } from '@fortawesome/free-solid-svg-icons'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { STORE_NAME_KEY, STORE_PILLS_KEY } from 'src/lib/constant'
@@ -23,7 +24,7 @@ import Plan from 'src/pages/Plan'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 
-library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog, faPills, faLongArrowAltLeft)
+library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog, faPills, faLongArrowAltLeft, faTrashAlt)
 
 const Stack = createNativeStackNavigator()
 const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }

@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo, useState, VFC } from 'react'
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import DatePicker from 'react-native-date-picker'
+import { add, startOfToday } from 'date-fns'
 import { EAT_TIMES } from 'src/lib/constant'
 import { COMMON_STYLE } from 'src/lib/styles'
 import { DayEatTime, ScreenList, ThemeColor, TIME_AMOUNT_MEASURE_LABELS, TimeAmountMeasure } from 'src/lib/types'
-import { capitalize, enumToOptions } from 'src/lib/utils'
+import { capitalize, enumToOptions, getFormattedTimestamp } from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -16,7 +18,38 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [timeAmount, setTimeAmount] = useState<string>('')
   const [timeAmountMeasure, setTimeAmountMeasure] = useState<TimeAmountMeasure>('days')
   const [eatTimes, setEatTimes] = useState<DayEatTime[]>([])
+  const [notifications, setNotifications] = useState<string[]>(['10:00'])
+  const [nextActiveDate, setNextActiveDate] = useState<string>('10:00')
+  const [pickerState, setPickerState] = useState<{ date: Date; index: number }>({ date: new Date(), index: -2 })
   const timeAmountMeasureOptions = useMemo(() => enumToOptions(TIME_AMOUNT_MEASURE_LABELS), [])
+
+  const onEdit = useCallback((timestamp: string, index: number) => {
+    const split = timestamp.split(':')
+    const today = startOfToday()
+    const date = add(today, { hours: Number(split[0]), minutes: Number(split[1]) })
+    setPickerState({ date, index })
+  }, [])
+
+  const onSubmit = useCallback(
+    (nextDate: Date) => {
+      setPickerState({ date: new Date(), index: -2 })
+      const nextTimestamp = getFormattedTimestamp(nextDate)
+      if (pickerState.index === -1) {
+        setNextActiveDate(nextTimestamp)
+      } else if (pickerState.index >= 0 && pickerState.index <= notifications.length - 1) {
+        setNotifications((prev) => {
+          const next = [...prev]
+          next[pickerState.index] = nextTimestamp
+          return next
+        })
+      }
+    },
+    [notifications, pickerState]
+  )
+
+  const onCancel = useCallback(() => {
+    setPickerState({ date: new Date(), index: -2 })
+  }, [])
 
   const onEatToggle = useCallback((eatTime: DayEatTime) => {
     setEatTimes((prev) => {
@@ -75,6 +108,36 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
           return <Button key={index} styleRoot={style} onPress={() => onEatToggle(eat)} text={text} color={color} />
         })}
       </View>
+      <Text style={styles.component}>When do we have to remind you?</Text>
+      {notifications.map((notification, index) => (
+        <View key={index} style={[styles.component, styles.flexContainer]}>
+          <Button
+            styleRoot={[styles.flexBig, styles.leftSpacer]}
+            text={notification}
+            onPress={() => onEdit(notification, index)}
+          />
+          <Button styleRoot={styles.rightSpacer} color="secondary" leftIcon="trash-alt" onPress={() => {}} />
+        </View>
+      ))}
+      <View style={[styles.component, styles.flexContainer]}>
+        <Button
+          styleRoot={[styles.flexBig, styles.leftSpacer]}
+          text={nextActiveDate}
+          onPress={() => onEdit(nextActiveDate, -1)}
+        />
+        <Button styleRoot={styles.rightSpacer} color="primary" leftIcon="plus" onPress={() => {}} />
+      </View>
+      <DatePicker
+        modal
+        open={pickerState.index !== -2}
+        mode="time"
+        title="Select hours and minutes"
+        confirmText="Confirm"
+        cancelText="Cancel"
+        date={pickerState.date}
+        onConfirm={onSubmit}
+        onCancel={onCancel}
+      />
     </DismissKeyboardView>
   )
 }
