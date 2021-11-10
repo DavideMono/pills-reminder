@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState, VFC } from 'react'
-import { ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
+import { Alert, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
 import { add, startOfToday } from 'date-fns'
@@ -13,6 +13,13 @@ import Input from 'src/components/Input'
 import Select from 'src/components/Select'
 
 const DEFAULT_TIME = '10:00'
+const ERRORS_MESSAGES = {
+  hasName: 'No name specified',
+  hasAmount: 'No pills amount specified',
+  hasTimeAmount: 'No time selected',
+  isEatTimeSelected: 'No eat time of the day specified',
+  hasNotification: 'No remember notification specified'
+}
 
 const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [name, setName] = useState<string>('')
@@ -91,7 +98,15 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
       console.log('Valid')
     } else {
-      console.error('Invalid', { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification })
+      const errors = { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
+      const currentErrorMessage = Object.keys(errors).reduce<string[]>((messages, key) => {
+        const errorKey = key as keyof typeof errors
+        const actualKey = key as keyof typeof ERRORS_MESSAGES
+        if (!errors[errorKey]) messages.push(ERRORS_MESSAGES[actualKey])
+        return messages
+      }, [])
+      const alertMessage = currentErrorMessage.join('\r\n')
+      Alert.alert(`Oh no! You got ${currentErrorMessage.length} errors`, alertMessage)
     }
   }, [name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
 
