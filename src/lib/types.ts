@@ -2,6 +2,7 @@ export type ThemeColor = 'default' | 'primary' | 'secondary'
 export type ThemeVariant = 'text' | 'contained'
 export type TimeAmountMeasure = 'days' | 'weeks' | 'months'
 export type DayEatTime = 'breakfast' | 'lunch' | 'dinner'
+export type DayTaskState = 'scheduled' | 'done' | 'skipped'
 
 export enum TIME_AMOUNT_MEASURE_LABELS {
   'days' = 'Days',
@@ -17,6 +18,7 @@ export type PillTask = {
   eatTimes: DayEatTime[]
   timeNotification: string[]
   totalAmount: number
+  taskSate: DayTaskState[][]
 }
 
 export type Store = {

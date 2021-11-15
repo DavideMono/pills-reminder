@@ -8,6 +8,7 @@ import { useStore } from 'src/lib/store'
 import { COMMON_STYLE } from 'src/lib/styles'
 import {
   DayEatTime,
+  DayTaskState,
   PillTask,
   ScreenList,
   ThemeColor,
@@ -105,6 +106,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     const isEatTimeSelected = !!eatTimes.length
     const hasNotification = !!notifications.length
     if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
+      const totalAmount = getTotalAmount(timeAmountAsNumber, timeAmountMeasure)
       const nextTask: PillTask = {
         name,
         amount: amountAsNumber,
@@ -112,7 +114,8 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         timeAmountMeasure,
         eatTimes,
         timeNotification: notifications,
-        totalAmount: getTotalAmount(timeAmountAsNumber, timeAmountMeasure)
+        totalAmount,
+        taskSate: Array<DayTaskState[]>(totalAmount).fill(Array<DayTaskState>(eatTimes.length).fill('scheduled'))
       }
       store.add(nextTask)
       props.navigation.navigate('Home')
