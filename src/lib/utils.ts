@@ -1,5 +1,5 @@
+import { add, getHours, getMinutes, startOfToday } from 'date-fns'
 import { Option, TimeAmountMeasure } from 'src/lib/types'
-import { getHours, getMinutes } from 'date-fns'
 
 export const capitalize = (text: string) => {
   const firstUpper = text.charAt(0).toUpperCase()
@@ -15,6 +15,12 @@ export const parseStoreValue = <T>(data: string | null, defaultValue: T): T => {
 
 export const enumToOptions = (enumLike: Record<string, any>) => {
   return Object.entries(enumLike).map<Option>(([value, label]) => ({ value, label }))
+}
+
+export const getDateWithTimestamp = (timestamp: string): Date => {
+  const split = timestamp.split(':')
+  const today = startOfToday()
+  return add(today, { hours: Number(split[0]), minutes: Number(split[1]) })
 }
 
 export const getFormattedTimestamp = (date: Date) => {

@@ -1,6 +1,7 @@
 import create from 'zustand'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { STORE_NAME_KEY, STORE_PILLS_KEY } from 'src/lib/constant'
+import { createChannel, deleteChannel, reclaimChannel } from 'src/lib/notification'
 import { Store } from 'src/lib/types'
 
 export const useStore = create<Store>((set) => ({
@@ -9,6 +10,7 @@ export const useStore = create<Store>((set) => ({
   updateName: (nextName) => set(() => ({ name: nextName })),
   add: (task) => {
     return set((store) => {
+      createChannel(task)
       const updatedTasks = store.tasks.concat(task)
       return { tasks: updatedTasks }
     })
@@ -16,12 +18,14 @@ export const useStore = create<Store>((set) => ({
   update: (task, index) => {
     return set((store) => {
       const updatedTasks = store.tasks.splice(index, 1, task)
+      reclaimChannel(task, updatedTasks[0])
       return { tasks: updatedTasks }
     })
   },
   delete: (index) => {
     return set((store) => {
       const updatedTasks = [...store.tasks].splice(index, 1)
+      deleteChannel(updatedTasks[0])
       return { tasks: updatedTasks }
     })
   },

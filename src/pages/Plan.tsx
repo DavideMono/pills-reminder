@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState, VFC } from 'react'
 import { Alert, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
-import { add, startOfToday } from 'date-fns'
 import { EAT_TIMES } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
 import { COMMON_STYLE } from 'src/lib/styles'
@@ -15,7 +14,7 @@ import {
   TIME_AMOUNT_MEASURE_LABELS,
   TimeAmountMeasure
 } from 'src/lib/types'
-import { capitalize, enumToOptions, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
+import { capitalize, enumToOptions, getDateWithTimestamp, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -43,9 +42,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const timeAmountMeasureOptions = useMemo(() => enumToOptions(TIME_AMOUNT_MEASURE_LABELS), [])
 
   const onEdit = useCallback((timestamp: string, index: number) => {
-    const split = timestamp.split(':')
-    const today = startOfToday()
-    const date = add(today, { hours: Number(split[0]), minutes: Number(split[1]) })
+    const date = getDateWithTimestamp(timestamp)
     setPickerState({ date, index })
   }, [])
 
