@@ -17,6 +17,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
   const [searchValue, setSearchValue] = useState<string>('')
 
   const goToSettings = useCallback(() => props.navigation.navigate('Account'), [props])
+  const goToPlan = useCallback((name: string) => props.navigation.navigate('Plan', { id: name }), [props])
 
   useEffect(() => {
     const searchValueLowerCase = searchValue.toLowerCase()
@@ -53,7 +54,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
               leftIcon="pills"
               text={task.name}
               rightIcon="long-arrow-alt-right"
-              onPress={() => console.log('Press on', task.name)}
+              onPress={() => goToPlan(task.name)}
             />
           ))}
         </ScrollView>

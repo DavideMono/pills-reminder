@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, VFC } from 'react'
+import React, { useCallback, useEffect, useMemo, useState, VFC } from 'react'
 import { Alert, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
@@ -128,6 +128,20 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       Alert.alert(`Oh no! You got ${currentErrorMessage.length} errors`, alertMessage)
     }
   }, [props.navigation, name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
+
+  useEffect(() => {
+    if (props.route.params) {
+      const task = store.tasks.find((t) => t.name === props.route.params?.id)
+      if (task) {
+        setName(task.name)
+        setAmount(task.amount.toString())
+        setTimeAmount(task.timeAmount.toString())
+        setTimeAmountMeasure(task.timeAmountMeasure)
+        setEatTimes(task.eatTimes)
+        setNotifications(task.timeNotification)
+      }
+    }
+  }, [props.route.params, store])
 
   return (
     <DismissKeyboardView>
