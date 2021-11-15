@@ -14,8 +14,9 @@ export type PillTask = {
   amount: number
   timeAmount: number
   timeAmountMeasure: TimeAmountMeasure
-  eatTime: DayEatTime[]
-  timeNotification: number
+  eatTimes: DayEatTime[]
+  timeNotification: string[]
+  totalAmount: number
 }
 
 export type Store = {

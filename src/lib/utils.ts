@@ -1,4 +1,4 @@
-import { Option } from 'src/lib/types'
+import { Option, TimeAmountMeasure } from 'src/lib/types'
 import { getHours, getMinutes } from 'date-fns'
 
 export const capitalize = (text: string) => {
@@ -23,4 +23,10 @@ export const getFormattedTimestamp = (date: Date) => {
   const formattedHours = hours < 10 ? `0${hours}` : hours.toString()
   const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes.toString()
   return `${formattedHours}:${formattedMinutes}`
+}
+
+export const getTotalAmount = (time: number, measure: TimeAmountMeasure): number => {
+  if (measure === 'weeks') return time * 7
+  if (measure === 'months') return time * 30
+  return time
 }

@@ -4,9 +4,17 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
 import { add, startOfToday } from 'date-fns'
 import { EAT_TIMES } from 'src/lib/constant'
+import { useStore } from 'src/lib/store'
 import { COMMON_STYLE } from 'src/lib/styles'
-import { DayEatTime, ScreenList, ThemeColor, TIME_AMOUNT_MEASURE_LABELS, TimeAmountMeasure } from 'src/lib/types'
-import { capitalize, enumToOptions, getFormattedTimestamp } from 'src/lib/utils'
+import {
+  DayEatTime,
+  PillTask,
+  ScreenList,
+  ThemeColor,
+  TIME_AMOUNT_MEASURE_LABELS,
+  TimeAmountMeasure
+} from 'src/lib/types'
+import { capitalize, enumToOptions, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -22,6 +30,7 @@ const ERRORS_MESSAGES = {
 }
 
 const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
+  const store = useStore()
   const [name, setName] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [timeAmount, setTimeAmount] = useState<string>('')
@@ -96,7 +105,17 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     const isEatTimeSelected = !!eatTimes.length
     const hasNotification = !!notifications.length
     if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
-      console.log('Valid')
+      const nextTask: PillTask = {
+        name,
+        amount: amountAsNumber,
+        timeAmount: timeAmountAsNumber,
+        timeAmountMeasure,
+        eatTimes,
+        timeNotification: notifications,
+        totalAmount: getTotalAmount(timeAmountAsNumber, timeAmountMeasure)
+      }
+      store.add(nextTask)
+      props.navigation.navigate('Home')
     } else {
       const errors = { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
       const currentErrorMessage = Object.keys(errors).reduce<string[]>((messages, key) => {
@@ -108,7 +127,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       const alertMessage = currentErrorMessage.join('\r\n')
       Alert.alert(`Oh no! You got ${currentErrorMessage.length} errors`, alertMessage)
     }
-  }, [name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
+  }, [props.navigation, name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
 
   return (
     <DismissKeyboardView>
