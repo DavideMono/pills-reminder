@@ -42,6 +42,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [nextActiveDate, setNextActiveDate] = useState<string>(DEFAULT_TIME)
   const [pickerState, setPickerState] = useState<{ date: Date; index: number }>({ date: new Date(), index: -2 })
   const timeAmountMeasureOptions = useMemo(() => enumToOptions(TIME_AMOUNT_MEASURE_LABELS), [])
+  const title = useMemo(() => `${activeTask ? 'Edit' : 'Add'} plan`, [activeTask])
 
   const onEdit = useCallback((timestamp: string, index: number) => {
     const date = getDateWithTimestamp(timestamp)
@@ -148,6 +149,24 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     notifications
   ])
 
+  const onDelete = useCallback(() => {
+    const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
+    if (index !== -1) {
+      Alert.alert('Are you sure?', `Are you sure you want to delete ${activeTask?.name} task?`, [
+        {
+          text: 'Yes',
+          onPress: () => {
+            store.delete(index)
+            props.navigation.navigate('Home')
+          }
+        },
+        {
+          text: 'No'
+        }
+      ])
+    }
+  }, [props.route, props.navigation, store, activeTask])
+
   useEffect(() => {
     if (activeTask) {
       setName(activeTask.name)
@@ -164,8 +183,9 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       <View style={[styles.component, styles.flexContainer]}>
         <Button size="xl" leftIcon="long-arrow-alt-left" onPress={() => props.navigation.goBack()} />
         <View style={styles.flexBig} />
+        {activeTask && <Button size="xl" leftIcon="trash-alt" onPress={onDelete} />}
       </View>
-      <Text style={[styles.component, COMMON_STYLE.title]}>Add Plan</Text>
+      <Text style={[styles.component, COMMON_STYLE.title]}>{title}</Text>
       <Text style={styles.component}>Pills name</Text>
       <Input
         style={styles.component}
