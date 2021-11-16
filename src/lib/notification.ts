@@ -1,4 +1,4 @@
-import PushNotification from 'react-native-push-notification'
+import PushNotification, { Importance } from 'react-native-push-notification'
 import { PillTask } from 'src/lib/types'
 import { addDayIfDatePassed, getDateWithTimestamp, scaleDayIfDatePassed } from 'src/lib/utils'
 
@@ -13,7 +13,8 @@ export const createChannel = (task: PillTask) => {
     {
       channelId: getChannelId(task),
       channelName: task.name,
-      channelDescription: `Notification to take ${task.name}`
+      channelDescription: `Notification to take ${task.name}`,
+      importance: Importance.HIGH
     },
     (created) => {
       if (created) {
@@ -27,6 +28,7 @@ export const createChannel = (task: PillTask) => {
             date: addDayIfDatePassed(date),
             repeatType: 'day',
             visibility: 'secret',
+            importance: 'high',
             repeatTime: scaleDayIfDatePassed(task.totalAmount, date)
           })
         })
