@@ -17,16 +17,18 @@ export const useStore = create<Store>((set) => ({
   },
   update: (task, index) => {
     return set((store) => {
-      const updatedTasks = store.tasks.splice(index, 1, task)
+      const next = [...store.tasks]
+      const updatedTasks = next.splice(index, 1, task)
       reclaimChannel(task, updatedTasks[0])
-      return { tasks: store.tasks }
+      return { tasks: next }
     })
   },
   delete: (index) => {
     return set((store) => {
-      const updatedTasks = [...store.tasks].splice(index, 1)
+      const next = [...store.tasks]
+      const updatedTasks = next.splice(index, 1)
       deleteChannel(updatedTasks[0])
-      return { tasks: updatedTasks }
+      return { tasks: next }
     })
   },
   initialize: (tasks, name) => set(() => ({ tasks, name }))
