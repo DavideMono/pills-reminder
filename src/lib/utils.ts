@@ -18,14 +18,14 @@ export const enumToOptions = (enumLike: Record<string, any>) => {
 }
 
 export const addDayIfDatePassed = (date: Date): Date => {
-  if (Date.now() > date.getDate()) {
+  if (Date.now() > date.valueOf()) {
     return add(date, { days: 1 })
   }
   return date
 }
 
 export const scaleDayIfDatePassed = (total: number, date: Date): number => {
-  if (Date.now() > date.getDate()) {
+  if (Date.now() > date.valueOf()) {
     return total - 1
   }
   return total
