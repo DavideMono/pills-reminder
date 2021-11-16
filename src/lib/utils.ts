@@ -17,6 +17,20 @@ export const enumToOptions = (enumLike: Record<string, any>) => {
   return Object.entries(enumLike).map<Option>(([value, label]) => ({ value, label }))
 }
 
+export const addDayIfDatePassed = (date: Date): Date => {
+  if (Date.now() > date.getDate()) {
+    return add(date, { days: 1 })
+  }
+  return date
+}
+
+export const scaleDayIfDatePassed = (total: number, date: Date): number => {
+  if (Date.now() > date.getDate()) {
+    return total - 1
+  }
+  return total
+}
+
 export const getDateWithTimestamp = (timestamp: string): Date => {
   const split = timestamp.split(':')
   const today = startOfToday()
