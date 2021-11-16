@@ -171,10 +171,13 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const actualActions = useMemo<ActionType[]>(() => {
     const actions: ActionType[] = []
     if (activeTask) {
-      actions.push({ icon: 'trash-alt', onPress: onDelete }, { icon: 'check', onPress: () => console.log('On Mark') })
+      actions.push(
+        { icon: 'check', onPress: () => props.navigation.navigate('Marks', { id: activeTask.name }) },
+        { icon: 'trash-alt', onPress: onDelete }
+      )
     }
     return actions
-  }, [onDelete])
+  }, [onDelete, activeTask])
 
   useEffect(() => {
     if (activeTask) {

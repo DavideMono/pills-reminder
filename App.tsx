@@ -7,6 +7,7 @@ import {
   faCalendar,
   faCheck,
   faCog,
+  faHistory,
   faHome,
   faLongArrowAltLeft,
   faLongArrowAltRight,
@@ -24,6 +25,7 @@ import Account from 'src/pages/Account'
 import Plan from 'src/pages/Plan'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
+import Marks from 'src/pages/Marks'
 
 library.add(
   faPlus,
@@ -35,7 +37,8 @@ library.add(
   faPills,
   faLongArrowAltLeft,
   faTrashAlt,
-  faCheck
+  faCheck,
+  faHistory
 )
 
 const Stack = createNativeStackNavigator()
@@ -88,6 +91,7 @@ const App: VFC = () => {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="Account" component={Account} />
         <Stack.Screen name="Plan" component={Plan} />
+        <Stack.Screen name="Marks" component={Marks} />
       </Stack.Navigator>
     </NavigationContainer>
   )
