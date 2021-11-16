@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState, VFC } from 'react'
 import { Alert, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import DatePicker from 'react-native-date-picker'
-import { add, startOfToday } from 'date-fns'
 import { EAT_TIMES } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
 import { COMMON_STYLE } from 'src/lib/styles'
@@ -15,7 +14,7 @@ import {
   TIME_AMOUNT_MEASURE_LABELS,
   TimeAmountMeasure
 } from 'src/lib/types'
-import { capitalize, enumToOptions, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
+import { capitalize, enumToOptions, getDateWithTimestamp, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -24,6 +23,7 @@ import Select from 'src/components/Select'
 const DEFAULT_TIME = '10:00'
 const ERRORS_MESSAGES = {
   hasName: 'No name specified',
+  hasNotRepeatedName: 'Already exist a task with this name',
   hasAmount: 'No pills amount specified',
   hasTimeAmount: 'No time selected',
   isEatTimeSelected: 'No eat time of the day specified',
@@ -32,6 +32,7 @@ const ERRORS_MESSAGES = {
 
 const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const store = useStore()
+  const activeTask = useStore((state) => state.tasks.find((t) => t.name === props.route.params?.id) || null)
   const [name, setName] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [timeAmount, setTimeAmount] = useState<string>('')
@@ -41,11 +42,10 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const [nextActiveDate, setNextActiveDate] = useState<string>(DEFAULT_TIME)
   const [pickerState, setPickerState] = useState<{ date: Date; index: number }>({ date: new Date(), index: -2 })
   const timeAmountMeasureOptions = useMemo(() => enumToOptions(TIME_AMOUNT_MEASURE_LABELS), [])
+  const title = useMemo(() => `${activeTask ? 'Edit' : 'Add'} plan`, [activeTask])
 
   const onEdit = useCallback((timestamp: string, index: number) => {
-    const split = timestamp.split(':')
-    const today = startOfToday()
-    const date = add(today, { hours: Number(split[0]), minutes: Number(split[1]) })
+    const date = getDateWithTimestamp(timestamp)
     setPickerState({ date, index })
   }, [])
 
@@ -101,11 +101,12 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     const amountAsNumber = parseInt(amount)
     const timeAmountAsNumber = parseInt(timeAmount)
     const hasName = !!name
+    const hasNotRepeatedName = activeTask !== null ? true : store.tasks.every((t) => t.name !== name)
     const hasAmount = !!amount && !Number.isNaN(amountAsNumber) && amountAsNumber > 0
     const hasTimeAmount = !!timeAmount && !Number.isNaN(timeAmountAsNumber) && timeAmountAsNumber > 0
     const isEatTimeSelected = !!eatTimes.length
     const hasNotification = !!notifications.length
-    if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
+    if (hasName && hasNotRepeatedName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
       const totalAmount = getTotalAmount(timeAmountAsNumber, timeAmountMeasure)
       const nextTask: PillTask = {
         name,
@@ -117,10 +118,15 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         totalAmount,
         taskSate: Array<DayTaskState[]>(totalAmount).fill(Array<DayTaskState>(eatTimes.length).fill('scheduled'))
       }
-      store.add(nextTask)
+      if (activeTask) {
+        const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
+        store.update(nextTask, index)
+      } else {
+        store.add(nextTask)
+      }
       props.navigation.navigate('Home')
     } else {
-      const errors = { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
+      const errors = { hasName, hasNotRepeatedName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
       const currentErrorMessage = Object.keys(errors).reduce<string[]>((messages, key) => {
         const errorKey = key as keyof typeof errors
         const actualKey = key as keyof typeof ERRORS_MESSAGES
@@ -130,31 +136,65 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       const alertMessage = currentErrorMessage.join('\r\n')
       Alert.alert(`Oh no! You got ${currentErrorMessage.length} errors`, alertMessage)
     }
-  }, [props.navigation, name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
+  }, [
+    props.navigation,
+    props.route,
+    activeTask,
+    store.tasks,
+    name,
+    amount,
+    timeAmount,
+    timeAmountMeasure,
+    eatTimes,
+    notifications
+  ])
+
+  const onDelete = useCallback(() => {
+    const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
+    if (index !== -1) {
+      Alert.alert('Are you sure?', `Are you sure you want to delete ${activeTask?.name} task?`, [
+        {
+          text: 'Yes',
+          onPress: () => {
+            store.delete(index)
+            props.navigation.navigate('Home')
+          }
+        },
+        {
+          text: 'No'
+        }
+      ])
+    }
+  }, [props.route, props.navigation, store, activeTask])
 
   useEffect(() => {
-    if (props.route.params) {
-      const task = store.tasks.find((t) => t.name === props.route.params?.id)
-      if (task) {
-        setName(task.name)
-        setAmount(task.amount.toString())
-        setTimeAmount(task.timeAmount.toString())
-        setTimeAmountMeasure(task.timeAmountMeasure)
-        setEatTimes(task.eatTimes)
-        setNotifications(task.timeNotification)
-      }
+    if (activeTask) {
+      setName(activeTask.name)
+      setAmount(activeTask.amount.toString())
+      setTimeAmount(activeTask.timeAmount.toString())
+      setTimeAmountMeasure(activeTask.timeAmountMeasure)
+      setEatTimes(activeTask.eatTimes)
+      setNotifications(activeTask.timeNotification)
     }
-  }, [props.route.params, store])
+  }, [activeTask, store])
 
   return (
     <DismissKeyboardView>
       <View style={[styles.component, styles.flexContainer]}>
         <Button size="xl" leftIcon="long-arrow-alt-left" onPress={() => props.navigation.goBack()} />
         <View style={styles.flexBig} />
+        {activeTask && <Button size="xl" leftIcon="trash-alt" onPress={onDelete} />}
       </View>
-      <Text style={[styles.component, COMMON_STYLE.title]}>Add Plan</Text>
+      <Text style={[styles.component, COMMON_STYLE.title]}>{title}</Text>
       <Text style={styles.component}>Pills name</Text>
-      <Input style={styles.component} value={name} onChange={setName} leftIcon="pills" placeholder="Insert the name" />
+      <Input
+        style={styles.component}
+        value={name}
+        onChange={setName}
+        leftIcon="pills"
+        placeholder="Insert the name"
+        disabled={!!activeTask}
+      />
       <Text style={styles.component}>Amount & How long?</Text>
       <Input
         style={[styles.component]}

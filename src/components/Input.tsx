@@ -6,6 +6,7 @@ import { BACKGROUND_COLOR, BORDER_RADIUS, LIGHT_COLOR } from 'src/lib/constant'
 type Props = {
   value: string
   onChange: (nextValue: string) => void
+  disabled?: boolean
   keyboardType?: KeyboardTypeOptions
   placeholder?: string
   leftIcon?: IconProps['icon']
@@ -37,6 +38,7 @@ const Input: VFC<Props> = (props) => {
         style={inputStyle}
         value={props.value}
         onChangeText={props.onChange}
+        editable={!props.disabled}
         placeholder={props.placeholder}
         keyboardType={props.keyboardType}
       />
