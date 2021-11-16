@@ -1,3 +1,5 @@
+import { Props as IconProps } from '@fortawesome/react-native-fontawesome'
+
 export type ThemeColor = 'default' | 'primary' | 'secondary'
 export type ThemeVariant = 'text' | 'contained'
 export type TimeAmountMeasure = 'days' | 'weeks' | 'months'
@@ -35,6 +37,9 @@ export type ScreenList = {
   Home: undefined
   Account: undefined
   Plan: { id: string } | undefined
+  Marks: { id: string }
 }
 
 export type Option = { label: string; value: any; enabled?: boolean }
+
+export type ActionType = { icon: IconProps['icon']; onPress: () => void }

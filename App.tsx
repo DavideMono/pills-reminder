@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import {
   faBroom,
   faCalendar,
+  faCheck,
   faCog,
   faHome,
   faLongArrowAltLeft,
@@ -24,7 +25,18 @@ import Plan from 'src/pages/Plan'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 
-library.add(faPlus, faHome, faCalendar, faBroom, faLongArrowAltRight, faCog, faPills, faLongArrowAltLeft, faTrashAlt)
+library.add(
+  faPlus,
+  faHome,
+  faCalendar,
+  faBroom,
+  faLongArrowAltRight,
+  faCog,
+  faPills,
+  faLongArrowAltLeft,
+  faTrashAlt,
+  faCheck
+)
 
 const Stack = createNativeStackNavigator()
 const theme: Theme = { ...DefaultTheme, colors: { ...DefaultTheme.colors, background: '#FFFFFF' } }

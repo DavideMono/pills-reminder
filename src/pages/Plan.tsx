@@ -6,6 +6,7 @@ import { EAT_TIMES } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
 import { COMMON_STYLE } from 'src/lib/styles'
 import {
+  ActionType,
   DayEatTime,
   DayTaskState,
   PillTask,
@@ -167,6 +168,14 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     }
   }, [props.route, props.navigation, store, activeTask])
 
+  const actualActions = useMemo<ActionType[]>(() => {
+    const actions: ActionType[] = []
+    if (activeTask) {
+      actions.push({ icon: 'trash-alt', onPress: onDelete }, { icon: 'check', onPress: () => console.log('On Mark') })
+    }
+    return actions
+  }, [onDelete])
+
   useEffect(() => {
     if (activeTask) {
       setName(activeTask.name)
@@ -179,12 +188,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   }, [activeTask, store])
 
   return (
-    <DismissKeyboardView>
-      <View style={[styles.component, styles.flexContainer]}>
-        <Button size="xl" leftIcon="long-arrow-alt-left" onPress={() => props.navigation.goBack()} />
-        <View style={styles.flexBig} />
-        {activeTask && <Button size="xl" leftIcon="trash-alt" onPress={onDelete} />}
-      </View>
+    <DismissKeyboardView onGoBack={props.navigation.goBack} actions={actualActions}>
       <Text style={[styles.component, COMMON_STYLE.title]}>{title}</Text>
       <Text style={styles.component}>Pills name</Text>
       <Input
