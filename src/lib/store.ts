@@ -19,7 +19,7 @@ export const useStore = create<Store>((set) => ({
     return set((store) => {
       const updatedTasks = store.tasks.splice(index, 1, task)
       reclaimChannel(task, updatedTasks[0])
-      return { tasks: updatedTasks }
+      return { tasks: store.tasks }
     })
   },
   delete: (index) => {
