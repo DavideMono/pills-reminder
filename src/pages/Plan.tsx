@@ -23,6 +23,7 @@ import Select from 'src/components/Select'
 const DEFAULT_TIME = '10:00'
 const ERRORS_MESSAGES = {
   hasName: 'No name specified',
+  hasNotRepeatedName: 'Already exist a task with this name',
   hasAmount: 'No pills amount specified',
   hasTimeAmount: 'No time selected',
   isEatTimeSelected: 'No eat time of the day specified',
@@ -31,6 +32,7 @@ const ERRORS_MESSAGES = {
 
 const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const store = useStore()
+  const activeTask = useStore((state) => state.tasks.find((t) => t.name === props.route.params?.id) || null)
   const [name, setName] = useState<string>('')
   const [amount, setAmount] = useState<string>('')
   const [timeAmount, setTimeAmount] = useState<string>('')
@@ -98,11 +100,12 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
     const amountAsNumber = parseInt(amount)
     const timeAmountAsNumber = parseInt(timeAmount)
     const hasName = !!name
+    const hasNotRepeatedName = activeTask !== null ? true : store.tasks.every((t) => t.name !== name)
     const hasAmount = !!amount && !Number.isNaN(amountAsNumber) && amountAsNumber > 0
     const hasTimeAmount = !!timeAmount && !Number.isNaN(timeAmountAsNumber) && timeAmountAsNumber > 0
     const isEatTimeSelected = !!eatTimes.length
     const hasNotification = !!notifications.length
-    if (hasName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
+    if (hasName && hasNotRepeatedName && hasAmount && hasTimeAmount && isEatTimeSelected && hasNotification) {
       const totalAmount = getTotalAmount(timeAmountAsNumber, timeAmountMeasure)
       const nextTask: PillTask = {
         name,
@@ -114,10 +117,15 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         totalAmount,
         taskSate: Array<DayTaskState[]>(totalAmount).fill(Array<DayTaskState>(eatTimes.length).fill('scheduled'))
       }
-      store.add(nextTask)
+      if (activeTask) {
+        const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
+        store.update(nextTask, index)
+      } else {
+        store.add(nextTask)
+      }
       props.navigation.navigate('Home')
     } else {
-      const errors = { hasName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
+      const errors = { hasName, hasNotRepeatedName, hasAmount, hasTimeAmount, isEatTimeSelected, hasNotification }
       const currentErrorMessage = Object.keys(errors).reduce<string[]>((messages, key) => {
         const errorKey = key as keyof typeof errors
         const actualKey = key as keyof typeof ERRORS_MESSAGES
@@ -127,21 +135,29 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       const alertMessage = currentErrorMessage.join('\r\n')
       Alert.alert(`Oh no! You got ${currentErrorMessage.length} errors`, alertMessage)
     }
-  }, [props.navigation, name, amount, timeAmount, timeAmountMeasure, eatTimes, notifications])
+  }, [
+    props.navigation,
+    props.route,
+    activeTask,
+    store.tasks,
+    name,
+    amount,
+    timeAmount,
+    timeAmountMeasure,
+    eatTimes,
+    notifications
+  ])
 
   useEffect(() => {
-    if (props.route.params) {
-      const task = store.tasks.find((t) => t.name === props.route.params?.id)
-      if (task) {
-        setName(task.name)
-        setAmount(task.amount.toString())
-        setTimeAmount(task.timeAmount.toString())
-        setTimeAmountMeasure(task.timeAmountMeasure)
-        setEatTimes(task.eatTimes)
-        setNotifications(task.timeNotification)
-      }
+    if (activeTask) {
+      setName(activeTask.name)
+      setAmount(activeTask.amount.toString())
+      setTimeAmount(activeTask.timeAmount.toString())
+      setTimeAmountMeasure(activeTask.timeAmountMeasure)
+      setEatTimes(activeTask.eatTimes)
+      setNotifications(activeTask.timeNotification)
     }
-  }, [props.route.params, store])
+  }, [activeTask, store])
 
   return (
     <DismissKeyboardView>
@@ -151,7 +167,14 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
       </View>
       <Text style={[styles.component, COMMON_STYLE.title]}>Add Plan</Text>
       <Text style={styles.component}>Pills name</Text>
-      <Input style={styles.component} value={name} onChange={setName} leftIcon="pills" placeholder="Insert the name" />
+      <Input
+        style={styles.component}
+        value={name}
+        onChange={setName}
+        leftIcon="pills"
+        placeholder="Insert the name"
+        disabled={!!activeTask}
+      />
       <Text style={styles.component}>Amount & How long?</Text>
       <Input
         style={[styles.component]}
