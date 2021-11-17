@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState, VFC } from 'react'
 import { Alert, ScrollView, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { startOfToday } from 'date-fns'
 import DatePicker from 'react-native-date-picker'
 import { EAT_TIMES } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
@@ -8,14 +9,20 @@ import { COMMON_STYLE } from 'src/lib/styles'
 import {
   ActionType,
   DayEatTime,
-  DayTaskState,
   PillTask,
   ScreenList,
   ThemeColor,
   TIME_AMOUNT_MEASURE_LABELS,
   TimeAmountMeasure
 } from 'src/lib/types'
-import { capitalize, enumToOptions, getDateWithTimestamp, getFormattedTimestamp, getTotalAmount } from 'src/lib/utils'
+import {
+  capitalize,
+  createTaskState,
+  enumToOptions,
+  getDateWithTimestamp,
+  getFormattedTimestamp,
+  getTotalAmount
+} from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
 import Input from 'src/components/Input'
@@ -46,7 +53,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const title = useMemo(() => `${activeTask ? 'Edit' : 'Add'} plan`, [activeTask])
 
   const onEdit = useCallback((timestamp: string, index: number) => {
-    const date = getDateWithTimestamp(timestamp)
+    const date = getDateWithTimestamp(startOfToday(), timestamp)
     setPickerState({ date, index })
   }, [])
 
@@ -117,7 +124,7 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         eatTimes,
         timeNotification: notifications,
         totalAmount,
-        taskSate: Array<DayTaskState[]>(totalAmount).fill(Array<DayTaskState>(eatTimes.length).fill('scheduled'))
+        taskState: createTaskState(notifications, totalAmount)
       }
       if (activeTask) {
         const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
@@ -171,10 +178,13 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
   const actualActions = useMemo<ActionType[]>(() => {
     const actions: ActionType[] = []
     if (activeTask) {
-      actions.push({ icon: 'trash-alt', onPress: onDelete }, { icon: 'check', onPress: () => console.log('On Mark') })
+      actions.push(
+        { icon: 'check', onPress: () => props.navigation.navigate('Marks', { id: activeTask.name }) },
+        { icon: 'trash-alt', onPress: onDelete }
+      )
     }
     return actions
-  }, [onDelete])
+  }, [onDelete, activeTask])
 
   useEffect(() => {
     if (activeTask) {

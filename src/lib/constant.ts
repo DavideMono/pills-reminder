@@ -14,3 +14,5 @@ export const STORE_PILLS_KEY = '@pills'
 export const STORE_NAME_KEY = '@name'
 
 export const EAT_TIMES: DayEatTime[] = ['breakfast', 'lunch', 'dinner']
+
+export const DAY_FORMAT = 'yyyy/MM/dd'

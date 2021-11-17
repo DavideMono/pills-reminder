@@ -1,5 +1,6 @@
-import { add, getHours, getMinutes, startOfToday } from 'date-fns'
-import { Option, TimeAmountMeasure } from 'src/lib/types'
+import { add, format, getHours, getMinutes, startOfToday } from 'date-fns'
+import { DAY_FORMAT } from 'src/lib/constant'
+import { DayTaskState, Option, TaskState, TimeAmountMeasure } from 'src/lib/types'
 
 export const capitalize = (text: string) => {
   const firstUpper = text.charAt(0).toUpperCase()
@@ -17,24 +18,9 @@ export const enumToOptions = (enumLike: Record<string, any>) => {
   return Object.entries(enumLike).map<Option>(([value, label]) => ({ value, label }))
 }
 
-export const addDayIfDatePassed = (date: Date): Date => {
-  if (Date.now() > date.valueOf()) {
-    return add(date, { days: 1 })
-  }
-  return date
-}
-
-export const scaleDayIfDatePassed = (total: number, date: Date): number => {
-  if (Date.now() > date.valueOf()) {
-    return total - 1
-  }
-  return total
-}
-
-export const getDateWithTimestamp = (timestamp: string): Date => {
+export const getDateWithTimestamp = (date: Date, timestamp: string): Date => {
   const split = timestamp.split(':')
-  const today = startOfToday()
-  return add(today, { hours: Number(split[0]), minutes: Number(split[1]) })
+  return add(date, { hours: Number(split[0]), minutes: Number(split[1]) })
 }
 
 export const getFormattedTimestamp = (date: Date) => {
@@ -49,4 +35,19 @@ export const getTotalAmount = (time: number, measure: TimeAmountMeasure): number
   if (measure === 'weeks') return time * 7
   if (measure === 'months') return time * 30
   return time
+}
+
+export const createTaskState = (notification: string[], totalTime: number) => {
+  const today = startOfToday()
+  const state: TaskState = {}
+  const tasksNotification = notification.reduce<{ [index: string]: DayTaskState }>((acc, current) => {
+    acc[current] = 'scheduled'
+    return acc
+  }, {})
+  for (let i = 1; i <= totalTime; i++) {
+    const date = add(today, { days: i })
+    const index = format(date, DAY_FORMAT)
+    state[index] = { ...tasksNotification }
+  }
+  return state
 }
