@@ -1,6 +1,7 @@
 import PushNotification, { Importance } from 'react-native-push-notification'
+import { startOfTomorrow } from 'date-fns'
 import { PillTask } from 'src/lib/types'
-import { addDayIfDatePassed, getDateWithTimestamp, scaleDayIfDatePassed } from 'src/lib/utils'
+import { getDateWithTimestamp } from 'src/lib/utils'
 
 export const getChannelId = (task: PillTask) => `channel-${task.name}`
 
@@ -19,17 +20,17 @@ export const createChannel = (task: PillTask) => {
     (created) => {
       if (created) {
         task.timeNotification.forEach((timestamp) => {
-          const date = getDateWithTimestamp(timestamp)
+          const date = getDateWithTimestamp(startOfTomorrow(), timestamp)
           PushNotification.localNotificationSchedule({
             channelId: getChannelId(task),
             allowWhileIdle: true,
             title: `It's time to take ${task.name}`,
             message: 'You have to take your pill',
-            date: addDayIfDatePassed(date),
+            date: date,
             repeatType: 'day',
             visibility: 'secret',
             importance: 'high',
-            repeatTime: scaleDayIfDatePassed(task.totalAmount, date)
+            repeatTime: task.totalAmount
           })
         })
       } else {

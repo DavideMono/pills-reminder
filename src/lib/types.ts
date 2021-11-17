@@ -12,6 +12,12 @@ export enum TIME_AMOUNT_MEASURE_LABELS {
   'months' = 'Months'
 }
 
+export type TaskState = {
+  [date: string]: {
+    [notification: string]: DayTaskState
+  }
+}
+
 export type PillTask = {
   name: string
   amount: number
@@ -20,7 +26,7 @@ export type PillTask = {
   eatTimes: DayEatTime[]
   timeNotification: string[]
   totalAmount: number
-  taskSate: DayTaskState[][]
+  taskState: TaskState
 }
 
 export type Store = {
