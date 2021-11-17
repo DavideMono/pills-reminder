@@ -1,4 +1,5 @@
 import { add, format, getHours, getMinutes, startOfToday } from 'date-fns'
+import { DAY_FORMAT } from 'src/lib/constant'
 import { DayTaskState, Option, TaskState, TimeAmountMeasure } from 'src/lib/types'
 
 export const capitalize = (text: string) => {
@@ -45,9 +46,8 @@ export const createTaskState = (notification: string[], totalTime: number) => {
   }, {})
   for (let i = 1; i <= totalTime; i++) {
     const date = add(today, { days: i })
-    const index = format(date, 'yyyy/MM/dd')
+    const index = format(date, DAY_FORMAT)
     state[index] = { ...tasksNotification }
   }
-  console.log('state', state, tasksNotification)
   return state
 }
