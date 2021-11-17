@@ -35,46 +35,53 @@ const Marks: VFC<NativeStackScreenProps<ScreenList, 'Marks'>> = (props) => {
   return (
     <DismissKeyboardView onGoBack={props.navigation.goBack}>
       <Text style={COMMON_STYLE.title}>Mark your task for today</Text>
-      <ScrollView style={styles.spacing}>
-        {Object.entries(actualTask?.taskState[currentDate] || {}).map(([notification, state], index) => {
-          const color: ThemeColor = colorMap[state]
-          return (
-            <View key={index} style={[styles.spacing, styles.flexContainer]}>
-              <Button
-                styleRoot={[styles.flex, styles.noRoundRight]}
-                size="lg"
-                color={color}
-                text={notification}
-                onPress={() => {}}
-              />
-              <Button
-                styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
-                size="lg"
-                leftIcon="broom"
-                onPress={() => onMark(notification, 'scheduled')}
-              />
-              <Button
-                styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
-                size="lg"
-                leftIcon="history"
-                onPress={() => onMark(notification, 'skipped')}
-              />
-              <Button
-                styleRoot={styles.noRoundLeft}
-                size="lg"
-                leftIcon="check"
-                onPress={() => onMark(notification, 'done')}
-              />
-            </View>
-          )
-        })}
-      </ScrollView>
+      {actualTask?.taskState[currentDate] ? (
+        <ScrollView style={styles.spacing}>
+          {Object.entries(actualTask?.taskState[currentDate] || {}).map(([notification, state], index) => {
+            const color: ThemeColor = colorMap[state]
+            return (
+              <View key={index} style={[styles.spacing, styles.flexContainer]}>
+                <Button
+                  styleRoot={[styles.flex, styles.noRoundRight]}
+                  size="lg"
+                  color={color}
+                  text={notification}
+                  onPress={() => {}}
+                />
+                <Button
+                  styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
+                  size="lg"
+                  leftIcon="broom"
+                  onPress={() => onMark(notification, 'scheduled')}
+                />
+                <Button
+                  styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
+                  size="lg"
+                  leftIcon="history"
+                  onPress={() => onMark(notification, 'skipped')}
+                />
+                <Button
+                  styleRoot={styles.noRoundLeft}
+                  size="lg"
+                  leftIcon="check"
+                  onPress={() => onMark(notification, 'done')}
+                />
+              </View>
+            )
+          })}
+        </ScrollView>
+      ) : (
+        <View style={[styles.spacing, styles.flexContainer, styles.flexCenter]}>
+          <Text style={COMMON_STYLE.subtitleLight}>Nothing to mark today</Text>
+        </View>
+      )}
     </DismissKeyboardView>
   )
 }
 
 const styles = StyleSheet.create({
   flexContainer: { display: 'flex', flexDirection: 'row' },
+  flexCenter: { justifyContent: 'center' },
   flex: { flex: 1 },
   spacing: { marginVertical: 8 },
   noRoundRight: { borderTopRightRadius: 0, borderBottomRightRadius: 0 },
