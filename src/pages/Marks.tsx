@@ -17,62 +17,76 @@ const colorMap: { [index: string]: ThemeColor } = {
 
 const Marks: VFC<NativeStackScreenProps<ScreenList, 'Marks'>> = (props) => {
   const store = useStore()
-  const actualTaskIndex = useStore((state) => state.tasks.findIndex((t) => t.name === props.route.params.id))
-  const actualTask = useMemo(() => store.tasks[actualTaskIndex] || null, [store, actualTaskIndex])
+  const isSingle = useMemo(() => !!props.route.params?.id, [props.route])
+  const tasks = useMemo(
+    () => (props.route.params?.id ? store.tasks.filter((t) => t.name === props.route.params?.id) : store.tasks),
+    [store, props.route]
+  )
   const currentDate = useMemo(() => format(startOfToday(), DAY_FORMAT), [])
 
   const onMark = useCallback(
-    (notification: string, nextMark: DayTaskState) => {
-      if (actualTask) {
-        const next: PillTask = JSON.parse(JSON.stringify(actualTask))
-        next.taskState[currentDate][notification] = nextMark
-        store.update(next, actualTaskIndex)
-      }
+    (task: PillTask, index: number, notification: string, nextMark: DayTaskState) => {
+      const next: PillTask = JSON.parse(JSON.stringify(task))
+      next.taskState[currentDate][notification] = nextMark
+      store.update(next, index)
     },
-    [actualTask, currentDate]
+    [currentDate]
   )
 
   return (
     <DismissKeyboardView onGoBack={props.navigation.goBack}>
       <Text style={COMMON_STYLE.title}>Mark your task for today</Text>
-      {actualTask?.taskState[currentDate] ? (
+      {tasks.length ? (
         <ScrollView style={styles.spacing}>
-          {Object.entries(actualTask?.taskState[currentDate] || {}).map(([notification, state], index) => {
-            const color: ThemeColor = colorMap[state]
-            return (
-              <View key={index} style={[styles.spacing, styles.flexContainer]}>
-                <Button
-                  styleRoot={[styles.flex, styles.noRoundRight]}
-                  size="lg"
-                  color={color}
-                  text={notification}
-                  onPress={() => {}}
-                />
-                <Button
-                  styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
-                  size="lg"
-                  leftIcon="broom"
-                  onPress={() => onMark(notification, 'scheduled')}
-                />
-                <Button
-                  styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
-                  size="lg"
-                  leftIcon="history"
-                  onPress={() => onMark(notification, 'skipped')}
-                />
-                <Button
-                  styleRoot={styles.noRoundLeft}
-                  size="lg"
-                  leftIcon="check"
-                  onPress={() => onMark(notification, 'done')}
-                />
+          {tasks.map((actualTask, index) => {
+            return actualTask.taskState[currentDate] ? (
+              <View key={index} style={styles.spacing}>
+                {isSingle && <Text style={COMMON_STYLE.subtitle}>{actualTask.name}</Text>}
+                {Object.entries(actualTask.taskState[currentDate]).map(([notification, state], i) => {
+                  const color: ThemeColor = colorMap[state]
+                  return (
+                    <View key={`${index}-${i}`} style={[styles.spacing, styles.flexContainer]}>
+                      <Button
+                        styleRoot={[styles.flex, styles.noRoundRight]}
+                        size="lg"
+                        color={color}
+                        text={notification}
+                        onPress={() => {}}
+                      />
+                      <Button
+                        styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
+                        size="lg"
+                        leftIcon="broom"
+                        onPress={() => onMark(actualTask, index, notification, 'scheduled')}
+                      />
+                      <Button
+                        styleRoot={[styles.noRoundRight, styles.noRoundLeft]}
+                        size="lg"
+                        leftIcon="history"
+                        onPress={() => onMark(actualTask, index, notification, 'skipped')}
+                      />
+                      <Button
+                        styleRoot={styles.noRoundLeft}
+                        size="lg"
+                        leftIcon="check"
+                        onPress={() => onMark(actualTask, index, notification, 'done')}
+                      />
+                    </View>
+                  )
+                })}
+              </View>
+            ) : (
+              <View key={index} style={[styles.spacing, styles.flexContainer, styles.flexCenter]}>
+                <Text style={COMMON_STYLE.subtitleLight}>
+                  Nothing to mark today {isSingle && `for ${actualTask.name}`}
+                </Text>
               </View>
             )
           })}
         </ScrollView>
       ) : (
         <View style={[styles.spacing, styles.flexContainer, styles.flexCenter]}>
-          <Text style={COMMON_STYLE.subtitleLight}>Nothing to mark today</Text>
+          <Text style={COMMON_STYLE.subtitleLight}>Create your first task!</Text>
         </View>
       )}
     </DismissKeyboardView>

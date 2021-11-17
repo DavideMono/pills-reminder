@@ -41,6 +41,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
 
   const goToSettings = useCallback(() => props.navigation.navigate('Account'), [props])
   const goToPlan = useCallback((name: string) => props.navigation.navigate('Plan', { id: name }), [props])
+  const goToMarks = useCallback(() => props.navigation.navigate('Marks'), [])
 
   useEffect(() => {
     const searchValueLowerCase = searchValue.toLowerCase()
@@ -64,7 +65,9 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
           <Text>
             {done} of {total} completed
           </Text>
-          <Text style={[COMMON_STYLE.link, styles.textSpacer]}>Show more</Text>
+          <Text style={[COMMON_STYLE.link, styles.textSpacer]} onPress={goToMarks}>
+            Show more
+          </Text>
         </View>
         <View style={styles.cardRightChild} />
       </View>
