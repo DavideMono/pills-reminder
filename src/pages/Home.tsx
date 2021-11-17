@@ -85,7 +85,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
         </ScrollView>
       ) : (
         <View style={[styles.component, styles.noTaskContainer, styles.generalTaskContainer]}>
-          <Text>NO TASK FOR NOW</Text>
+          <Text>Create your first task!</Text>
         </View>
       )}
     </DismissKeyboardView>
