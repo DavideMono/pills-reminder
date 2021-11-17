@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState, VFC } from 'react'
-import { ScrollView, StyleSheet, Text, View } from 'react-native'
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { format, startOfToday } from 'date-fns'
 import shallow from 'zustand/shallow'
@@ -69,7 +69,9 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
             Show more
           </Text>
         </View>
-        <View style={styles.cardRightChild} />
+        <View style={styles.cardRightChild}>
+          <Image style={styles.image} source={require('../assets/flamenco.png')} />
+        </View>
       </View>
       <Text style={[COMMON_STYLE.subtitle]}>Daily Review</Text>
       {filteredTasks.length ? (
@@ -134,6 +136,13 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center'
+  },
+  image: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    width: 200,
+    height: 200
   }
 })
 
