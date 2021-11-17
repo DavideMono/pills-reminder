@@ -18,17 +18,23 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
   const [tasks] = useStore((state) => [state.tasks, state.add], shallow)
   const name = useStore((store) => store.name)
   const { done, total } = useMemo<TaskCount>(() => {
-    return tasks.reduce((acc, current) => {
-      const date = format(startOfToday(), DAY_FORMAT)
-      const singleCount = Object.values(current.taskState[date] || {}).reduce((acc, value) => {
-        if (value === 'done') acc.done += 1
-        acc.total += 1
+    return tasks.reduce(
+      (acc, current) => {
+        const date = format(startOfToday(), DAY_FORMAT)
+        const singleCount = Object.values(current.taskState[date] || {}).reduce(
+          (acc, value) => {
+            if (value === 'done') acc.done += 1
+            acc.total += 1
+            return acc
+          },
+          { ...INIT_COUNT }
+        )
+        acc.done = singleCount.done
+        acc.total = singleCount.total
         return acc
-      }, INIT_COUNT)
-      acc.done = singleCount.done
-      acc.total = singleCount.total
-      return acc
-    }, INIT_COUNT)
+      },
+      { ...INIT_COUNT }
+    )
   }, [tasks])
   const [filteredTasks, setFilteredTasks] = useState<PillTask[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
