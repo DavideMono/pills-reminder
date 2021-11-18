@@ -37,19 +37,48 @@ export const getTotalAmount = (time: number, measure: TimeAmountMeasure): number
   return time
 }
 
-export const createTaskState = (notification: string[], totalTime: number) => {
-  const today = startOfToday()
-  const state: TaskState = {}
-  const tasksNotification = notification.reduce<{ [index: string]: DayTaskState }>((acc, current) => {
+export const createTaskNotification = (notification: string[]) => {
+  return notification.reduce<{ [index: string]: DayTaskState }>((acc, current) => {
     acc[current] = 'scheduled'
     return acc
   }, {})
+}
+
+export const createTaskState = (notification: string[], totalTime: number) => {
+  const today = startOfToday()
+  const state: TaskState = {}
+  const tasksNotification = createTaskNotification(notification)
   for (let i = 1; i <= totalTime; i++) {
     const date = add(today, { days: i })
     const index = format(date, DAY_FORMAT)
     state[index] = { ...tasksNotification }
   }
   return state
+}
+
+export const reclaimTaskState = (oldState: TaskState, notification: string[], totalTime: number) => {
+  const keys = Object.keys(oldState)
+  if (keys.length < totalTime) {
+    const tasksNotification = createTaskNotification(notification)
+    const today = startOfToday()
+    const formatted = format(today, DAY_FORMAT)
+    const index = keys.findIndex((d) => d === formatted)
+    const nextTotalTimes = totalTime - index
+    const state: TaskState = {}
+    for (let i = 0; i < nextTotalTimes; i++) {
+      const nextDate = add(today, { days: i })
+      const nextIndex = format(nextDate, DAY_FORMAT)
+      state[nextIndex] = { ...tasksNotification }
+    }
+    return { ...oldState, ...state }
+  } else if (keys.length > totalTime) {
+    const reducedKeys = keys.slice(0, totalTime)
+    return reducedKeys.reduce<TaskState>((acc, current) => {
+      acc[current] = oldState[current]
+      return acc
+    }, {})
+  }
+  return oldState
 }
 
 export const getCount = (tasks: PillTask[]) => {

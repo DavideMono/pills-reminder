@@ -21,7 +21,8 @@ import {
   enumToOptions,
   getDateWithTimestamp,
   getFormattedTimestamp,
-  getTotalAmount
+  getTotalAmount,
+  reclaimTaskState
 } from 'src/lib/utils'
 import DismissKeyboardView from 'src/components/DismissKeyboardView'
 import Button from 'src/components/Button'
@@ -124,7 +125,9 @@ const Plan: VFC<NativeStackScreenProps<ScreenList, 'Plan'>> = (props) => {
         eatTimes,
         timeNotification: notifications,
         totalAmount,
-        taskState: createTaskState(notifications, totalAmount)
+        taskState: activeTask
+          ? reclaimTaskState(activeTask.taskState, notifications, totalAmount)
+          : createTaskState(notifications, totalAmount)
       }
       if (activeTask) {
         const index = store.tasks.findIndex((t) => t.name === props.route.params?.id)
