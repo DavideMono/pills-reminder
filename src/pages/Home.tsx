@@ -29,7 +29,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
   }, [tasks, searchValue])
 
   return (
-    <DismissKeyboardView onNavigate={props.navigation.navigate}>
+    <DismissKeyboardView onNavigate={props.navigation.navigate} currentRoute={props.route.name}>
       <View style={[styles.inputContainer, styles.component]}>
         <Input style={styles.input} value={searchValue} onChange={setSearchValue} placeholder="Search" />
         <Button onPress={goToSettings} leftIcon="cog" />

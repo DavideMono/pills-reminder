@@ -15,6 +15,7 @@ import Button from 'src/components/Button'
 
 type Props = {
   actions?: ActionType[]
+  currentRoute?: keyof ScreenList
   onNavigate?: NativeStackNavigationProp<ScreenList>['navigate']
   onGoBack?: NativeStackNavigationProp<ScreenList>['goBack']
   style?: StyleProp<ViewStyle>
@@ -43,7 +44,9 @@ const DismissKeyboardView: FC<Props> = (props) => {
             </View>
           )}
           {props.children}
-          {props.onNavigate && <BottomNavigation navigate={props.onNavigate} />}
+          {props.onNavigate && !!props.currentRoute && (
+            <BottomNavigation navigate={props.onNavigate} route={props.currentRoute} />
+          )}
         </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
