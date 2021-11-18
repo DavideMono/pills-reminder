@@ -1,4 +1,4 @@
-import { DayEatTime } from 'src/lib/types'
+import { DayEatTime, TaskCount } from 'src/lib/types'
 
 export const LIGHT_COLOR = '#9B9B9B'
 export const STRONG_COLOR = '#0A0909'
@@ -16,3 +16,5 @@ export const STORE_NAME_KEY = '@name'
 export const EAT_TIMES: DayEatTime[] = ['breakfast', 'lunch', 'dinner']
 
 export const DAY_FORMAT = 'yyyy/MM/dd'
+
+export const START_COUNT: TaskCount = { done: 0, total: 0 }

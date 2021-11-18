@@ -5,6 +5,7 @@ export type ThemeVariant = 'text' | 'contained'
 export type TimeAmountMeasure = 'days' | 'weeks' | 'months'
 export type DayEatTime = 'breakfast' | 'lunch' | 'dinner'
 export type DayTaskState = 'scheduled' | 'done' | 'skipped'
+export type TaskCount = { done: number; total: number }
 
 export enum TIME_AMOUNT_MEASURE_LABELS {
   'days' = 'Days',

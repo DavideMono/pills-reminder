@@ -1,6 +1,6 @@
 import { add, format, getHours, getMinutes, startOfToday } from 'date-fns'
-import { DAY_FORMAT } from 'src/lib/constant'
-import { DayTaskState, Option, TaskState, TimeAmountMeasure } from 'src/lib/types'
+import { DAY_FORMAT, START_COUNT } from 'src/lib/constant'
+import { DayTaskState, Option, PillTask, TaskState, TimeAmountMeasure } from 'src/lib/types'
 
 export const capitalize = (text: string) => {
   const firstUpper = text.charAt(0).toUpperCase()
@@ -50,4 +50,21 @@ export const createTaskState = (notification: string[], totalTime: number) => {
     state[index] = { ...tasksNotification }
   }
   return state
+}
+
+export const getCount = (tasks: PillTask[]) => {
+  const init = { ...START_COUNT }
+  return tasks.reduce((total, current) => {
+    const singleInit = { ...START_COUNT }
+    const date = format(startOfToday(), DAY_FORMAT)
+    const notifications = Object.values(current.taskState[date] || {})
+    const singleCount = notifications.reduce((acc, value) => {
+      if (value === 'done') acc.done += 1
+      acc.total += 1
+      return acc
+    }, singleInit)
+    total.total += singleCount.total
+    total.done += singleCount.done
+    return total
+  }, init)
 }
