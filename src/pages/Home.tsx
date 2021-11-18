@@ -19,7 +19,7 @@ const Home: VFC<NativeStackScreenProps<ScreenList, 'Home'>> = (props) => {
   const [searchValue, setSearchValue] = useState<string>('')
 
   const goToSettings = useCallback(() => props.navigation.navigate('Account'), [props])
-  const goToPlan = useCallback((name: string) => props.navigation.navigate('Plan', { id: name }), [props])
+  const goToPlan = useCallback((id: string) => props.navigation.navigate('Plan', { id }), [props])
   const goToMarks = useCallback(() => props.navigation.navigate('Marks'), [])
 
   useEffect(() => {
