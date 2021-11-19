@@ -26,6 +26,7 @@ import Plan from 'src/pages/Plan'
 import Splash from 'src/pages/Splash'
 import Error from 'src/pages/Error'
 import Marks from 'src/pages/Marks'
+import Calendar from 'src/pages/Calendar'
 
 library.add(
   faPlus,
@@ -92,6 +93,7 @@ const App: VFC = () => {
         <Stack.Screen name="Account" component={Account} />
         <Stack.Screen name="Plan" component={Plan} />
         <Stack.Screen name="Marks" component={Marks} />
+        <Stack.Screen name="Calendar" component={Calendar} />
       </Stack.Navigator>
     </NavigationContainer>
   )

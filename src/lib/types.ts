@@ -45,6 +45,7 @@ export type ScreenList = {
   Account: undefined
   Plan: { id: string } | undefined
   Marks: { id: string } | undefined
+  Calendar: undefined
 }
 
 export type Option = { label: string; value: any; enabled?: boolean }
