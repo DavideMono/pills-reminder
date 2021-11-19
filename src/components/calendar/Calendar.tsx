@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState, VFC } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
-import { addMonths, endOfMonth, endOfWeek, startOfMonth, startOfWeek, subMonths } from 'date-fns'
+import { add, addMonths, endOfMonth, endOfWeek, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
+import { PRIMARY } from 'src/lib/constant'
 import Header from 'src/components/calendar/Header'
 
 const WEEKS_DAY = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
@@ -12,27 +13,28 @@ const Calendar: VFC = () => {
   const startOfCalendar = useMemo(() => startOfWeek(startOfThisMonth, { weekStartsOn: 1 }), [startOfThisMonth])
   const endOfCalendar = useMemo(() => endOfWeek(endOfThisMonth, { weekStartsOn: 1 }), [endOfThisMonth])
   const calendarDays = useMemo(() => {
-    const startDay = startOfCalendar.getDate()
-    let endOfPrevWeekDays: number[] = []
-    let endOfNextWeekDays: number[] = []
+    let endOfPrevWeekDays: Date[] = []
+    let endOfNextWeekDays: Date[] = []
     if (startOfCalendar.getDate() !== startOfThisMonth.getDate()) {
       const endOfPrevMonth = endOfMonth(startOfCalendar)
       const betweenDays = endOfPrevMonth.getDate() - startOfCalendar.getDate() + 1
       endOfPrevWeekDays = Array.from({ length: betweenDays }).map((_, index) => {
-        const day = startDay + index
-        if (day <= endOfPrevMonth.getDate()) return day
-        return day - endOfPrevMonth.getDate()
+        const day = add(startOfCalendar, { days: index })
+        if (day.getDate() <= endOfPrevMonth.getDate()) return day
+        return add(day, { days: -endOfPrevMonth.getDate() })
       })
     }
     if (endOfCalendar.getDate() !== endOfThisMonth.getDate()) {
-      endOfNextWeekDays = Array.from({ length: endOfCalendar.getDate() }).map((_, index) => index + 1)
+      endOfNextWeekDays = Array.from({ length: endOfCalendar.getDate() }).map((_, index) =>
+        add(startOfThisMonth, { months: 1, days: index })
+      )
     }
     const monthsDate = Array.from({ length: endOfThisMonth.getDate() }).map((_, index) => {
-      return startOfThisMonth.getDate() + index
+      return add(startOfThisMonth, { days: index })
     })
     const allDays = [...endOfPrevWeekDays, ...monthsDate, ...endOfNextWeekDays]
     const chunksLength = 7
-    const chunks: number[][] = []
+    const chunks: Date[][] = []
     for (let i = 0; i < allDays.length; i += chunksLength) {
       chunks.push(allDays.slice(i, chunksLength + i))
     }
@@ -68,21 +70,26 @@ const Calendar: VFC = () => {
       </View>
       {calendarDays.map((week, index, array) => (
         <View style={[styles.flexContainer, styles.flex]} key={index}>
-          {week.map((day, i, arr) => (
-            <Text
-              style={[
-                styles.flex,
-                styles.textCenter,
-                styles.text,
-                styles.day,
-                i === arr.length - 1 && styles.dayRight,
-                index === array.length - 1 && styles.dayBottom
-              ]}
-              key={`${index}-${i}`}
-            >
-              {day.toString()}
-            </Text>
-          ))}
+          {week.map((day, i, arr) => {
+            const today = isToday(day)
+            return (
+              <Text
+                style={[
+                  styles.flex,
+                  styles.textCenter,
+                  styles.text,
+                  styles.day,
+                  i === arr.length - 1 && styles.dayRight,
+                  index === array.length - 1 && styles.dayBottom,
+                  today && styles.dayToday,
+                  today && styles.dayTextToday
+                ]}
+                key={`${index}-${i}`}
+              >
+                {day.getDate()}
+              </Text>
+            )
+          })}
         </View>
       ))}
     </View>
@@ -99,5 +106,7 @@ const styles = StyleSheet.create({
   text: { fontSize: 16 },
   day: { borderTopWidth: 1, borderLeftWidth: 1 },
   dayRight: { borderRightWidth: 1 },
-  dayBottom: { borderBottomWidth: 1 }
+  dayBottom: { borderBottomWidth: 1 },
+  dayToday: { backgroundColor: PRIMARY },
+  dayTextToday: { color: 'white' }
 })
