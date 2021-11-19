@@ -1,11 +1,12 @@
-import React, { useMemo, VFC } from 'react'
+import React, { useCallback, useMemo, useState, VFC } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
-import { endOfMonth, endOfWeek, startOfMonth, startOfWeek } from 'date-fns'
+import { addMonths, endOfMonth, endOfWeek, startOfMonth, startOfWeek, subMonths } from 'date-fns'
+import Header from 'src/components/calendar/Header'
 
 const WEEKS_DAY = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
 const Calendar: VFC = () => {
-  const currentDate = useMemo(() => new Date(2021, 10), [])
+  const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const startOfThisMonth = useMemo(() => startOfMonth(currentDate), [currentDate])
   const endOfThisMonth = useMemo(() => endOfMonth(currentDate), [currentDate])
   const startOfCalendar = useMemo(() => startOfWeek(startOfThisMonth, { weekStartsOn: 1 }), [startOfThisMonth])
@@ -36,11 +37,19 @@ const Calendar: VFC = () => {
       chunks.push(allDays.slice(i, chunksLength + i))
     }
     return chunks
+  }, [startOfThisMonth, endOfThisMonth, startOfCalendar, endOfCalendar])
+
+  const onPrevMonth = useCallback(() => {
+    setCurrentDate((prev) => subMonths(prev, 1))
   }, [])
 
-  console.log(startOfThisMonth, endOfThisMonth, startOfCalendar, endOfCalendar, calendarDays)
+  const onNextMonth = useCallback(() => {
+    setCurrentDate((prev) => addMonths(prev, 1))
+  }, [])
+
   return (
     <View style={[styles.flex]}>
+      <Header currentDate={currentDate} onPrevMonth={onPrevMonth} onNextMonth={onNextMonth} />
       <View style={[styles.flexContainer, styles.spacing]}>
         {WEEKS_DAY.map((w, index) => (
           <Text style={[styles.flex, styles.textCenter]} key={index}>
