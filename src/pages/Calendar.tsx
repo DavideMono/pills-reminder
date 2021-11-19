@@ -3,11 +3,14 @@ import { StyleSheet, View, Text } from 'react-native'
 import { add, addMonths, endOfMonth, endOfWeek, format, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
 import { DAY_FORMAT, PRIMARY, SECONDARY } from 'src/lib/constant'
 import { useStore } from 'src/lib/store'
-import Header from 'src/components/calendar/Header'
+import Header from 'src/components/Header'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { ScreenList } from 'src/lib/types'
+import DismissKeyboardView from 'src/components/DismissKeyboardView'
 
 const WEEKS_DAY = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
-const Calendar: VFC = () => {
+const Calendar: VFC<NativeStackScreenProps<ScreenList, 'Calendar'>> = (props) => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const states = useStore((state) => state.tasks.map((t) => t.taskState))
   const tasksCount = useMemo(() => {
@@ -62,7 +65,7 @@ const Calendar: VFC = () => {
   }, [])
 
   return (
-    <View style={[styles.flex]}>
+    <DismissKeyboardView onNavigate={props.navigation.navigate} currentRoute={props.route.name}>
       <Header currentDate={currentDate} onPrevMonth={onPrevMonth} onNextMonth={onNextMonth} />
       <View style={styles.flexContainer}>
         {WEEKS_DAY.map((w, index, array) => (
@@ -109,7 +112,8 @@ const Calendar: VFC = () => {
           })}
         </View>
       ))}
-    </View>
+      <View style={styles.spacer} />
+    </DismissKeyboardView>
   )
 }
 
@@ -134,5 +138,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginVertical: 8
   },
-  counterText: { color: 'white' }
+  counterText: { color: 'white' },
+  spacer: { marginVertical: 8 }
 })

@@ -21,7 +21,13 @@ const BottomNavigation: VFC<Props> = (props) => {
         onPress={() => onNavigate('Home')}
       />
       <Button leftIcon="plus" color="primary" size="big" onPress={() => onNavigate('Plan')} />
-      <Button leftIcon="calendar" variant="text" size="lg" onPress={() => {}} />
+      <Button
+        leftIcon="calendar"
+        variant="text"
+        color={isRoute('Calendar', props.route)}
+        size="lg"
+        onPress={() => onNavigate('Calendar')}
+      />
     </View>
   )
 }
