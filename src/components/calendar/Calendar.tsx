@@ -1,13 +1,25 @@
 import React, { useCallback, useMemo, useState, VFC } from 'react'
 import { StyleSheet, View, Text } from 'react-native'
-import { add, addMonths, endOfMonth, endOfWeek, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
-import { PRIMARY } from 'src/lib/constant'
+import { add, addMonths, endOfMonth, endOfWeek, format, isToday, startOfMonth, startOfWeek, subMonths } from 'date-fns'
+import { DAY_FORMAT, PRIMARY, SECONDARY } from 'src/lib/constant'
+import { useStore } from 'src/lib/store'
 import Header from 'src/components/calendar/Header'
 
 const WEEKS_DAY = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
 const Calendar: VFC = () => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date())
+  const states = useStore((state) => state.tasks.map((t) => t.taskState))
+  const tasksCount = useMemo(() => {
+    const keys = states.flatMap((t) => Object.keys(t))
+    return keys.reduce<{ [date: string]: number }>((acc, current) => {
+      acc[current] = states.reduce((total, s) => {
+        total += Object.keys(s[current] || {}).length
+        return total
+      }, 0)
+      return acc
+    }, {})
+  }, [states])
   const startOfThisMonth = useMemo(() => startOfMonth(currentDate), [currentDate])
   const endOfThisMonth = useMemo(() => endOfMonth(currentDate), [currentDate])
   const startOfCalendar = useMemo(() => startOfWeek(startOfThisMonth, { weekStartsOn: 1 }), [startOfThisMonth])
@@ -72,22 +84,27 @@ const Calendar: VFC = () => {
         <View style={[styles.flexContainer, styles.flex]} key={index}>
           {week.map((day, i, arr) => {
             const today = isToday(day)
+            const key = format(day, DAY_FORMAT)
+            const taskCount = tasksCount[key] || 0
             return (
-              <Text
+              <View
+                key={`${index}-${i}`}
                 style={[
                   styles.flex,
-                  styles.textCenter,
-                  styles.text,
+                  styles.flexVerticalCenter,
                   styles.day,
                   i === arr.length - 1 && styles.dayRight,
                   index === array.length - 1 && styles.dayBottom,
-                  today && styles.dayToday,
-                  today && styles.dayTextToday
+                  today && styles.dayToday
                 ]}
-                key={`${index}-${i}`}
               >
-                {day.getDate()}
-              </Text>
+                <Text style={[styles.textCenter, styles.text, today && styles.dayTextToday]}>{day.getDate()}</Text>
+                {taskCount > 0 && (
+                  <View style={styles.counter}>
+                    <Text style={styles.counterText}>{taskCount}</Text>
+                  </View>
+                )}
+              </View>
             )
           })}
         </View>
@@ -100,6 +117,7 @@ export default Calendar
 
 const styles = StyleSheet.create({
   flexContainer: { display: 'flex', flexDirection: 'row' },
+  flexVerticalCenter: { alignItems: 'center' },
   flexCenter: { justifyContent: 'center' },
   textCenter: { textAlign: 'center' },
   flex: { flex: 1 },
@@ -108,5 +126,13 @@ const styles = StyleSheet.create({
   dayRight: { borderRightWidth: 1 },
   dayBottom: { borderBottomWidth: 1 },
   dayToday: { backgroundColor: PRIMARY },
-  dayTextToday: { color: 'white' }
+  dayTextToday: { color: 'white' },
+  counter: {
+    borderRadius: 99,
+    backgroundColor: SECONDARY,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    marginVertical: 8
+  },
+  counterText: { color: 'white' }
 })
