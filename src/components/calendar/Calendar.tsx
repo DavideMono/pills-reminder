@@ -50,17 +50,36 @@ const Calendar: VFC = () => {
   return (
     <View style={[styles.flex]}>
       <Header currentDate={currentDate} onPrevMonth={onPrevMonth} onNextMonth={onNextMonth} />
-      <View style={[styles.flexContainer, styles.spacing]}>
-        {WEEKS_DAY.map((w, index) => (
-          <Text style={[styles.flex, styles.textCenter]} key={index}>
+      <View style={styles.flexContainer}>
+        {WEEKS_DAY.map((w, index, array) => (
+          <Text
+            style={[
+              styles.flex,
+              styles.textCenter,
+              styles.text,
+              styles.day,
+              index === array.length - 1 && styles.dayRight
+            ]}
+            key={index}
+          >
             {w}
           </Text>
         ))}
       </View>
-      {calendarDays.map((week, index) => (
+      {calendarDays.map((week, index, array) => (
         <View style={[styles.flexContainer, styles.flex]} key={index}>
-          {week.map((day, i) => (
-            <Text style={[styles.flex, styles.textCenter]} key={`${index}-${i}`}>
+          {week.map((day, i, arr) => (
+            <Text
+              style={[
+                styles.flex,
+                styles.textCenter,
+                styles.text,
+                styles.day,
+                i === arr.length - 1 && styles.dayRight,
+                index === array.length - 1 && styles.dayBottom
+              ]}
+              key={`${index}-${i}`}
+            >
               {day.toString()}
             </Text>
           ))}
@@ -77,5 +96,8 @@ const styles = StyleSheet.create({
   flexCenter: { justifyContent: 'center' },
   textCenter: { textAlign: 'center' },
   flex: { flex: 1 },
-  spacing: { marginVertical: 8 }
+  text: { fontSize: 16 },
+  day: { borderTopWidth: 1, borderLeftWidth: 1 },
+  dayRight: { borderRightWidth: 1 },
+  dayBottom: { borderBottomWidth: 1 }
 })
